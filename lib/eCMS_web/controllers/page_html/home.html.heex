@@ -1,3 +1,44 @@
+     <style>
+      header { display: none !important; }
+      main { padding: 0 !important; }
+
+      /* Footer styling */
+      .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .copyright {
+        display: flex;
+        align-items: center;
+      }
+
+      .social {
+        display: flex;
+        gap: 15px;
+      }
+
+      .social-item {
+        display: flex;
+        align-items: center;
+        color: white;
+        font-size: 12px;
+      }
+
+      .social-item img {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+      }
+    </style>
 <link phx-track-static rel="stylesheet" href={~p"/assets/design.css"} />
 <div class="main-landing">
   <div class="center-wrap">
@@ -7,42 +48,46 @@
     <p class="subtitle">"SYSTEMATIC TRAINING, CENTERED ASSESSMENT"</p>
 
     <div class="cards">
+      <!-- User Apply Courses Card -->
       <div class="card">
         <div class="card-label">USER APPLY COURSES</div>
         <div class="card-box">
-          <img src={~p"/images/man-reading-a-book-25.png"} alt="User" />
-          <div class="side-tab"></div>
+          <img src={~p"/images/man-reading-a-book-25.png"} alt="User" class="toggle-image" data-check="user-check" />
+          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" id="user-check" style="display: none;" />
         </div>
       </div>
 
+      <!-- Admin Manage Data Card -->
       <div class="card">
         <div class="card-label">ADMIN MANAGE DATA</div>
         <div class="card-box">
-          <img src={~p"/images/administrator-26.png"} alt="Admin" />
-          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" />
+          <img src={~p"/images/administrator-26.png"} alt="Admin" class="toggle-image" data-check="admin-check" />
+          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" id="admin-check" style="display: none;" />
         </div>
       </div>
 
+      <!-- Trainer Evaluate & Manage Card -->
       <div class="card">
         <div class="card-label">TRAINER EVALUATE &amp; MANAGE</div>
         <div class="card-box">
-          <img src={~p"/images/personal-trainer-24.png"} alt="Trainer" />
-          <div class="side-tab"></div>
+          <img src={~p"/images/personal-trainer-24.png"} alt="Trainer" class="toggle-image" data-check="trainer-check" />
+          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" id="trainer-check" style="display: none;" />
         </div>
       </div>
     </div>
 
     <div class="login-row">
       <img src={~p"/images/password-27.png"} alt="Lock" class="lock" />
-      <a href="#" class="login-btn">LOGIN</a>
+      <a href={~p"/users/log_in"} class="login-btn">LOGIN</a>
     </div>
 
     <div class="help">☎️ NEED HELP? CALL SYSTEM ADMIN.</div>
 
+    <!-- Footer Section -->
     <div class="footer">
       <div class="copyright">
         <img src={~p"/images/copyright-34.png"} alt="copyright" />
-        <span>2025 Airuddinsah. All rights reserved.</span>
+        <span>2025 eCMS. All rights reserved.</span>
       </div>
       <div class="social">
         <a class="social-item" href="#"><img src={~p"/images/facebook-17.png"} alt="Facebook" /> <span>facebook.com</span></a>
@@ -53,4 +98,28 @@
     </div>
   </div>
 </div>
+
 <script defer phx-track-static src={~p"/assets/design.js"}></script>
+
+<!-- Add this JavaScript to toggle the checkmark visibility for all images -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all images with the class 'toggle-image'
+    const toggleImages = document.querySelectorAll('.toggle-image');
+    
+    toggleImages.forEach(image => {
+      image.addEventListener('click', function() {
+        // First, hide all checkmark icons
+        const allCheckboxes = document.querySelectorAll('.badge-check');
+        allCheckboxes.forEach(checkbox => {
+          checkbox.style.display = "none";
+        });
+
+        // Then, show the checkmark icon related to the clicked image
+        const checkId = image.getAttribute('data-check');
+        const checkElement = document.getElementById(checkId);
+        checkElement.style.display = "block"; // Show the corresponding checkmark icon
+      });
+    });
+  });
+</script>
