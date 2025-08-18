@@ -14,6 +14,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        tealLight: '#12a79d',
+        tealDark: '#0e5f59',
+        panel: '#14323a',
+        brand: '#0fb7ad',
+        muted: '#cfd8dc',
+        black: '#0b0b0b',
         brand: "#FD4F00",
       }
     },
@@ -69,6 +75,18 @@ module.exports = {
           }
         }
       }, {values})
+    }),
+
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        '.no-scrollbar::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '.no-scrollbar': {
+          '-ms-overflow-style': 'none',  // IE and Edge
+          'scrollbar-width': 'none',     // Firefox
+        },
+      })
     })
   ]
 }

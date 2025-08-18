@@ -1,125 +1,153 @@
-     <style>
-      header { display: none !important; }
-      main { padding: 0 !important; }
+<div class="min-h-screen flex flex-col bg-gradient-to-r from-tealDark via-tealDark to-tealDark" style="overflow: hidden; scrollbar-width: none;">
+  <!-- Main content container -->
+  <div class="flex-1 flex flex-col max-w-screen-xl mx-auto px-6 pt-10">
+    <!-- Logo -->
+    <img src={~p"/images/logo-cms-5-29.png"}
+         alt="e-CMS"
+         class="w-[150px] h-[100px] rounded-full p-2 mx-auto mb-4 object-contain" />
 
-      /* Footer styling */
-      .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 10px;
-        text-align: center;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+    <!-- Title -->
+    <h1 class="text-center text-[45px] font-black leading-tight tracking-wide text-black mt-2">
+      COURSE MANAGEMENT SYSTEM
+    </h1>
 
-      .copyright {
-        display: flex;
-        align-items: center;
-      }
+    <!-- Subtitle -->
+    <p class="text-center mt-2 font-['Lilita_One'] text-[40px] font-black text-white">
+      "SYSTEMATIC TRAINING, CENTERED ASSESSMENT"
+    </p>
 
-      .social {
-        display: flex;
-        gap: 15px;
-      }
+    <!-- Role cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-9 mt-9 justify-items-center">
+      <!-- User Card -->
+      <div class="flex flex-col items-center">
+        <div class="text-black text-lg tracking-wide uppercase text-center font-black mb-2">
+          USER APPLY COURSES
+        </div>
+        <div
+          class="relative rounded-[18px] h-[200px] w-[340px] flex items-center justify-center shadow-md border-[3px] border-[#5fd6cf] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_20px_6px_rgba(95,214,207,0.6)]"
+          data-check="user-check">
+          <img src={~p"/images/man-reading-a-book-25.png"} alt="User" class="max-h-[120px] w-auto role-img" />
+          <img src={~p"/images/checkmark.jpg"} alt="Checked" id="user-check"
+               class="absolute right-[-6px] top-1/2 -translate-y-1/2 w-7 h-7 hidden badge-check" />
+        </div>
 
-      .social-item {
-        display: flex;
-        align-items: center;
-        color: white;
-        font-size: 12px;
-      }
+            <!-- Registration link -->
+            <div class="w-full text-right mt-3 pr-2">
+              <p class="signup-line text-lg text-white">
+                For new user
+                <.link navigate={~p"/users/register"} 
+                class="text-lg font-semibold text-yellow-400 underline hover:text-yellow-300">
+                Sign up
+                </.link>
+                for an account now.
+              </p>
+            </div>
+      </div>
 
-      .social-item img {
-        width: 20px;
-        height: 20px;
-        margin-right: 5px;
-      }
-    </style>
-<link phx-track-static rel="stylesheet" href={~p"/assets/design.css"} />
-<div class="main-landing">
-  <div class="center-wrap">
-    <img src={~p"/images/logo-cms-5-29.png"} alt="e-CMS" class="brand-logo" />
-
-    <h1 class="title">COURSE MANAGEMENT SYSTEM</h1>
-    <p class="subtitle">"SYSTEMATIC TRAINING, CENTERED ASSESSMENT"</p>
-
-    <div class="cards">
-      <!-- User Apply Courses Card -->
-      <div class="card">
-        <div class="card-label">USER APPLY COURSES</div>
-        <div class="card-box">
-          <img src={~p"/images/man-reading-a-book-25.png"} alt="User" class="toggle-image" data-check="user-check" />
-          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" id="user-check" style="display: none;" />
+      <!-- Admin Card -->
+      <div class="flex flex-col items-center">
+        <div class="text-black text-lg tracking-wide uppercase text-center font-black mb-2">
+          ADMIN MANAGE DATA
+        </div>
+        <div
+          class="relative rounded-[18px] h-[200px] w-[340px] flex items-center justify-center shadow-md border-[3px] border-[#5fd6cf] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_20px_6px_rgba(95,214,207,0.6)]"
+          data-check="admin-check">
+          <img src={~p"/images/administrator-26.png"} alt="Admin" class="max-h-[120px] w-auto role-img" />
+          <img src={~p"/images/checkmark.jpg"} alt="Checked" id="admin-check"
+               class="absolute right-[-6px] top-1/2 -translate-y-1/2 w-7 h-7 hidden badge-check" />
         </div>
       </div>
 
-      <!-- Admin Manage Data Card -->
-      <div class="card">
-        <div class="card-label">ADMIN MANAGE DATA</div>
-        <div class="card-box">
-          <img src={~p"/images/administrator-26.png"} alt="Admin" class="toggle-image" data-check="admin-check" />
-          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" id="admin-check" style="display: none;" />
+      <!-- Trainer Card -->
+      <div class="flex flex-col items-center">
+        <div class="text-black text-lg tracking-wide uppercase text-center font-black mb-2">
+          TRAINER EVALUATE &amp; MANAGE
         </div>
-      </div>
-
-      <!-- Trainer Evaluate & Manage Card -->
-      <div class="card">
-        <div class="card-label">TRAINER EVALUATE &amp; MANAGE</div>
-        <div class="card-box">
-          <img src={~p"/images/personal-trainer-24.png"} alt="Trainer" class="toggle-image" data-check="trainer-check" />
-          <img src={~p"/images/checkmark-33.png"} alt="Checked" class="badge-check" id="trainer-check" style="display: none;" />
+        <div
+          class="relative rounded-[18px] h-[200px] w-[340px] flex items-center justify-center shadow-md border-[3px] border-[#5fd6cf] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_20px_6px_rgba(95,214,207,0.6)]"
+          data-check="trainer-check">
+          <img src={~p"/images/personal-trainer-24.png"} alt="Trainer" class="max-h-[120px] w-auto role-img" />
+          <img src={~p"/images/checkmark.jpg"} alt="Checked" id="trainer-check"
+               class="absolute right-[-6px] top-1/2 -translate-y-1/2 w-7 h-7 hidden badge-check" />
         </div>
       </div>
     </div>
 
-    <div class="login-row">
-      <img src={~p"/images/password-27.png"} alt="Lock" class="lock" />
-      <a href={~p"/users/log_in"} class="login-btn">LOGIN</a>
+    <!-- Login row -->
+    <div class="mt-10 flex items-center justify-center gap-4">
+      <img src={~p"/images/password-27.png"} alt="Lock" class="w-[42px] h-[42px]" />
+      <a href={~p"/users/log_in"} class="bg-[#5fd6cf] hover:bg-[#04675F] text-black px-6 py-3 rounded shadow-lg font-semibold login-btn">
+        LOGIN
+      </a>
     </div>
 
-    <div class="help">☎️ NEED HELP? CALL SYSTEM ADMIN.</div>
-
-    <!-- Footer Section -->
-    <div class="footer">
-      <div class="copyright">
-        <img src={~p"/images/copyright-34.png"} alt="copyright" />
-        <span>2025 eCMS. All rights reserved.</span>
-      </div>
-      <div class="social">
-        <a class="social-item" href="#"><img src={~p"/images/facebook-17.png"} alt="Facebook" /> <span>facebook.com</span></a>
-        <a class="social-item" href="#"><img src={~p"/images/whatsapp-28.png"} alt="WhatsApp" /> <span>whatsapp.com</span></a>
-        <a class="social-item" href="#"><img src={~p"/images/linkedin-circled-16.png"} alt="LinkedIn" /> <span>linkedin.com</span></a>
-        <a class="social-item" href="#"><img src={~p"/images/twitter-circled-18.png"} alt="Twitter" /> <span>twitter.com</span></a>
-      </div>
+    <!-- Help -->
+    <div class="mt-4 text-center text-white font-semibold tracking-wide">
+      ☎️ NEED HELP? CALL SYSTEM ADMIN.
     </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto flex items-center justify-between gap-4 px-6 pb-3 bg-transparent text-white">
+    <div class="flex items-center gap-2">
+      <img src={~p"/images/copyright-34.png"} alt="copyright" class="w-[30px] h-[30px]" />
+      <span class="text-base">2025 eCMS. All rights reserved.</span>
+    </div>
+    <div class="flex items-center gap-7">
+      <a href="#" class="flex items-center gap-2 text-base">
+        <img src={~p"/images/facebook-17.png"} alt="Facebook" class="w-[30px] h-[30px]" />
+        <span>facebook.com</span>
+      </a>
+      <a href="#" class="flex items-center gap-2 text-base">
+        <img src={~p"/images/whatsapp-28.png"} alt="WhatsApp" class="w-[30px] h-[30px]" />
+        <span>whatsapp.com</span>
+      </a>
+      <a href="#" class="flex items-center gap-2 text-base">
+        <img src={~p"/images/linkedin-circled-16.png"} alt="LinkedIn" class="w-[30px] h-[30px]" />
+        <span>linkedin.com</span>
+      </a>
+      <a href="#" class="flex items-center gap-2 text-base">
+        <img src={~p"/images/twitter-circled-18.png"} alt="Twitter" class="w-[30px] h-[30px]" />
+        <span>twitter.com</span>
+      </a>
+    </div>
+  </footer>
 </div>
 
-<script defer phx-track-static src={~p"/assets/design.js"}></script>
-
-<!-- Add this JavaScript to toggle the checkmark visibility for all images -->
+<!-- JS for role selection with grow & highlight -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Get all images with the class 'toggle-image'
-    const toggleImages = document.querySelectorAll('.toggle-image');
-    
-    toggleImages.forEach(image => {
-      image.addEventListener('click', function() {
-        // First, hide all checkmark icons
-        const allCheckboxes = document.querySelectorAll('.badge-check');
-        allCheckboxes.forEach(checkbox => {
-          checkbox.style.display = "none";
-        });
+document.addEventListener('DOMContentLoaded', function() {
+  let selectedRole = null;
 
-        // Then, show the checkmark icon related to the clicked image
-        const checkId = image.getAttribute('data-check');
-        const checkElement = document.getElementById(checkId);
-        checkElement.style.display = "block"; // Show the corresponding checkmark icon
+  document.querySelectorAll('[data-check]').forEach(card => {
+    card.addEventListener('click', function() {
+      // Reset all
+      document.querySelectorAll('[data-check]').forEach(c => {
+        c.classList.remove('scale-115', 'shadow-[0_0_25px_8px_rgba(95,214,207,0.8)]');
       });
+      document.querySelectorAll('.badge-check').forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.role-img').forEach(img => img.classList.remove('max-h-[200px]'));
+
+      // Highlight selected
+      const checkId = card.getAttribute('data-check');
+      document.getElementById(checkId).classList.remove('hidden');
+      card.classList.add('scale-115', 'shadow-[0_0_25px_8px_rgba(95,214,207,0.8)]');
+      card.querySelector('.role-img').classList.add('max-h-[200px]');
+
+      selectedRole = checkId.replace('-check', '');
     });
   });
+
+  const loginBtn = document.querySelector('.login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (!selectedRole) {
+        alert('Please select your role before logging in.');
+        return;
+      }
+      window.location.href = '/users/log_in?role=' + encodeURIComponent(selectedRole);
+    });
+  }
+});
 </script>
