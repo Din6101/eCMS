@@ -1,0 +1,134 @@
+<div class="min-h-screen w-full bg-[#06A295] flex flex-col">
+  <!-- Header -->
+  <header class="flex justify-between items-center px-8 py-6">
+    <h1 class="text-3xl font-bold text-white flex items-center gap-2">
+      📚 Course Management
+    </h1>
+
+    
+    <!-- Add new course button -->
+    <.link
+      patch={~p"/admin/courses/new"}
+      class="px-4 py-2 bg-[#5fd6cf] hover:bg-[#04675F] text-black font-semibold rounded shadow-md transition"
+    >
+      ➕ Add New Course
+    </.link>
+  </header>
+
+  <!-- Search + Filter -->
+  <div class="flex justify-end items-center px-8 py-4">
+    <form phx-submit="search" class="flex gap-2 items-center">
+      <input
+        type="text"
+        name="search"
+        placeholder="Search courses..."
+        value={@search}
+        class="px-3 text-black py-2 rounded border border-gray-300 w-64"
+      />
+      <button type="submit" class="px-4 py-2 bg-white text-black rounded shadow">
+        🔍 Search
+      </button>
+    </form>
+
+    <!-- Sorting dropdown -->
+  <form phx-change="sort" class="ml-4">
+    <select
+      name="sort"
+      class="px-7 py-2 rounded border border-gray-300 text-black"
+    >
+      <option value="title_desc" selected={@sort == "title_desc"}>Tittle ↓</option>
+      <option value="title_asc"  selected={@sort == "title_asc"}>Tittle ↑</option>
+      <option value="id_desc"    selected={@sort == "id_desc"}>Course ID ↓</option>
+      <option value="id_asc"     selected={@sort == "id_asc"}>Course ID ↑</option>
+    </select>
+  </form>
+
+  </div>
+
+  
+
+  <!-- Courses table -->
+  <main class="flex-1 flex justify-center items-start p-6 w-full">
+    <div class="w-full px-6 py-8">
+      <table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2 text-left w-[15%]">Course ID</th>
+            <th class="px-4 py-2 text-left w-[25%]">Title</th>
+            <th class="px-4 py-2 text-left w-[40%]">Description</th>
+            <th class="px-4 py-2 text-right w-[20%]">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="courses" class="divide-y divide-gray-200">
+          <tr :for={course <- @courses.entries} id={"course-#{course.id}"}>
+            <td class="px-4 py-2 whitespace-nowrap"><%= course.course_id %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= course.title %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= course.description %></td>
+            <td class="px-4 py-2 text-right whitespace-nowrap">
+              <div class="flex justify-end gap-2">
+                <!-- Edit button -->
+                <.link
+                  patch={~p"/admin/courses/#{course.id}/edit"}
+                  class="px-3 py-1 text-black rounded underline"
+                >
+                  Edit
+                </.link>
+
+                <!-- Delete button -->
+                <.link
+                  phx-click="delete"
+                  phx-value-id={course.id}
+                  data-confirm="Are you sure?"
+                  class="px-3 py-1 text-black rounded underline"
+                >
+                  Delete
+                </.link>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-4">
+        <button
+          :if={@courses.page > 1}
+          phx-click="paginate"
+          phx-value-page={@courses.page - 1}
+          class="px-3 py-1 bg-white text-black rounded shadow"
+        >
+          ◀ Prev
+        </button>
+
+        <span class="text-white">
+          Page <%= @courses.page %> of <%= @courses.total_pages %>
+        </span>
+
+        <button
+          :if={@courses.page < @courses.total_pages}
+          phx-click="paginate"
+          phx-value-page={@courses.page + 1}
+          class="px-3 py-1 bg-white text-black rounded shadow"
+        >
+          Next ▶
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for New/Edit form -->
+  <.modal
+    :if={@live_action in [:new, :edit]}
+    id="course-modal"
+    show
+    on_cancel={JS.patch(~p"/admin/courses")}
+  >
+    <.live_component
+      module={ECMSWeb.CourseLive.FormComponent}
+      id={@course && @course.id || :new}
+      title={@page_title}
+      action={@live_action}
+      course={@course}
+      patch={~p"/admin/courses"}
+    />
+  </.modal>
+</div>
