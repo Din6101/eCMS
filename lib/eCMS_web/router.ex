@@ -13,14 +13,35 @@ defmodule ECMSWeb.Router do
     plug :fetch_current_user
   end
 
+
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  scope "/admin", ECMSWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :admin,
+      on_mount: [{ECMSWeb.UserAuth, :ensure_authenticated}],
+      layout: {ECMSWeb.Layouts, :admin} do   # 👈 force admin layout here
+
+      live "/courses", CourseLive.Index, :index
+      live "/courses/new", CourseLive.Index, :new
+      live "/courses/:id/edit", CourseLive.Index, :edit
+
+      live "/courses/:id", CourseLive.Show, :show
+      live "/courses/:id/show/edit", CourseLive.Show, :edit
+
+      live "/dashboard_admin", DashboardAdmin, :index
+    end
   end
 
   scope "/", ECMSWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+
+
   end
 
   # Other scopes may use custom stacks.
