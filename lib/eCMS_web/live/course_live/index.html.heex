@@ -36,10 +36,10 @@
       name="sort"
       class="px-7 py-2 rounded border border-gray-300 text-black"
     >
-      <option value="title_desc" selected={@sort == "title_desc"}>Tittle ↓</option>
-      <option value="title_asc"  selected={@sort == "title_asc"}>Tittle ↑</option>
-      <option value="id_desc"    selected={@sort == "id_desc"}>Course ID ↓</option>
-      <option value="id_asc"     selected={@sort == "id_asc"}>Course ID ↑</option>
+      <option value="title_asc" selected={@sort == "title_asc"}>Tittle ↓</option>
+      <option value="title_desc"  selected={@sort == "title_desc"}>Tittle ↑</option>
+      <option value="id_asc"    selected={@sort == "id_asc"}>Course ID ↓</option>
+      <option value="id_desc"     selected={@sort == "id_desc"}>Course ID ↑</option>
     </select>
   </form>
 
@@ -72,16 +72,6 @@
                   class="px-3 py-1 text-black rounded underline"
                 >
                   Edit
-                </.link>
-
-                <!-- Delete button -->
-                <.link
-                  phx-click="delete"
-                  phx-value-id={course.id}
-                  data-confirm="Are you sure?"
-                  class="px-3 py-1 text-black rounded underline"
-                >
-                  Delete
                 </.link>
               </div>
             </td>

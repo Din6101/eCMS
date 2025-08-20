@@ -40,11 +40,24 @@ defmodule ECMSWeb.CourseLive.FormComponent do
 
       <:actions>
         <.button
-          class="bg-[#5fd6cf] text-black px-4 py-2 rounded-lg font-semibold shadow"
+          class="bg-[#2D9CDB] text-white px-4 py-2 rounded-lg font-semibold shadow"
           phx-disable-with="Saving..."
         >
-          Save Course
+          Save
         </.button>
+
+        <!-- Show delete only if editing an existing course -->
+        <%= if @course.id do %>
+        <.button
+          class="bg-[#FF0404] text-white px-4 py-2 rounded-lg font-semibold shadow"
+          phx-click="delete"
+          phx-value-id={@course.id}
+          data-confirm="Are you sure?"
+          >
+          Delete
+        </.button>
+        <% end %>
+
       </:actions>
     </.simple_form>
   </div>
@@ -69,6 +82,16 @@ end
 
   def handle_event("save", %{"course" => course_params}, socket) do
     save_course(socket, socket.assigns.action, course_params)
+  end
+
+  def handle_event("delete", %{"id" => id}, socket) do
+    course = ECMS.Courses.get_course!(id)
+    {:ok, _} = ECMS.Courses.delete_course(course)
+
+    {:noreply,
+     socket
+     |> put_flash(:info, "Course deleted successfully.")
+     |> push_navigate(to: ~p"/admin/courses")}
   end
 
   defp save_course(socket, :edit, course_params) do
@@ -102,4 +125,6 @@ end
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+
+
 end
