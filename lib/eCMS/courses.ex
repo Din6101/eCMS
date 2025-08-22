@@ -6,7 +6,77 @@ defmodule ECMS.Courses do
   import Ecto.Query, warn: false
   alias ECMS.Repo
 
-  alias ECMS.Courses.Course
+  alias ECMS.Courses.{Course, CourseApplication}
+
+  # Student applies to a course
+  def apply_course(user, course_id) do
+    %CourseApplication{}
+    |> CourseApplication.changeset(%{user_id: user.id, course_id: course_id, status: :pending})
+    |> Repo.insert()
+  end
+
+# List all applications (admin view)
+def list_applications(params \\ %{}) do
+  import Ecto.Query
+
+  query =
+    from a in CourseApplication,
+      join: c in assoc(a, :course),
+      join: u in assoc(a, :user),
+      preload: [course: c, user: u]
+
+  query =
+    case Map.get(params, "search") do
+      nil -> query
+      "" -> query
+      search ->
+        from [a, c, u] in query,
+          where: ilike(c.title, ^"%#{search}%") or ilike(u.full_name, ^"%#{search}%")
+    end
+
+  query =
+    case Map.get(params, "sort") do
+      "title_asc" -> from [a, c, u] in query, order_by: [asc: c.title]
+      "title_desc" -> from [a, c, u] in query, order_by: [desc: c.title]
+      "id_asc" -> from a in query, order_by: [asc: a.id]
+      "id_desc" -> from a in query, order_by: [desc: a.id]
+      _ -> query
+    end
+
+  # Pagination
+  page_number = Map.get(params, "page", "1") |> String.to_integer()
+  Repo.paginate(query, page: page_number, page_size: 10)
+end
+
+# Get one application
+def get_application!(id) do
+  Repo.get!(CourseApplication, id) |> Repo.preload([:user, :course])
+end
+
+# Approve an application
+def approve_application(%CourseApplication{} = app) do
+  app
+  |> CourseApplication.changeset(%{status: :approved})
+  |> Repo.update()
+end
+
+# Reject an application
+def reject_application(%CourseApplication{} = app) do
+  app
+  |> CourseApplication.changeset(%{status: :rejected})
+  |> Repo.update()
+end
+
+def update_application(%CourseApplication{} = app, attrs) do
+  app
+  |> CourseApplication.changeset(attrs)
+  |> Repo.update()
+end
+
+def delete_application(%CourseApplication{} = app) do
+  Repo.delete(app)
+end
+
 
 
   def generate_course_id do
