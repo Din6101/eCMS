@@ -38,7 +38,10 @@ defmodule ECMSWeb.Router do
   end
 
   scope "/", ECMSWeb do
-    pipe_through [:browser, :require_authenticated_user]
+
+
+
+    pipe_through [:browser, :require_authenticated_user, :require_student]
 
     get "/", PageController, :home
 
