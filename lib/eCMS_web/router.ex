@@ -19,7 +19,7 @@ defmodule ECMSWeb.Router do
   end
 
   scope "/admin", ECMSWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_authenticated_user, :require_admin]
 
     live_session :admin,
       on_mount: [{ECMSWeb.UserAuth, :ensure_authenticated}],
@@ -33,15 +33,23 @@ defmodule ECMSWeb.Router do
       live "/courses/:id/show/edit", CourseLive.Show, :edit
 
       live "/dashboard_admin", DashboardAdmin, :index
+      live "/course_application", CourseApplicationLive.Index, :index
     end
   end
 
   scope "/", ECMSWeb do
-    pipe_through :browser
+    pipe_through [:browser, :require_authenticated_user]
 
     get "/", PageController, :home
 
+    live_session :student,
+      on_mount: [{ECMSWeb.UserAuth, :ensure_authenticated}],
+      layout: {ECMSWeb.Layouts, :student} do
 
+    live "/dashboard_student", DashboardStudent, :index
+    live "/course_live/student_course", CourseLive.StudentCourse, :index
+
+    end
   end
 
   # Other scopes may use custom stacks.

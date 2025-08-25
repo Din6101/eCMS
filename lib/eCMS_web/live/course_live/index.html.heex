@@ -108,7 +108,7 @@
   <!-- Modal for New/Edit form -->
   <.modal
     :if={@live_action in [:new, :edit]}
-    id="course-modal"
+    id="course-modal"  
     show
     on_cancel={JS.patch(~p"/admin/courses")}
   >
