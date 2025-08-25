@@ -32,9 +32,34 @@ defmodule ECMSWeb.UserAuth do
     conn
     |> renew_session()
     |> put_token_in_session(token)
+    |> put_session(:role, user.role)   # 👈 store role in session
     |> maybe_write_remember_me_cookie(token, params)
-    |> redirect(to: user_return_to || signed_in_path(conn))
+    |> redirect(to: user_return_to || signed_in_path(user))
   end
+
+  def require_admin(conn, _opts) do
+    if get_session(conn, :role) == "admin" do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Unauthorized")
+      |> redirect(to: "/")
+      |> halt()
+    end
+  end
+
+  def require_student(conn, _opts) do
+    if get_session(conn, :role) == "student" do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Unauthorized")
+      |> redirect(to: "/")
+      |> halt()
+    end
+  end
+
+
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
     put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
@@ -225,5 +250,8 @@ defmodule ECMSWeb.UserAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
-  defp signed_in_path(_conn), do: ~p"/"
+  # Redirect admins vs normal users after login
+defp signed_in_path(%{role: "admin"}), do: ~p"/admin/dashboard_admin"
+defp signed_in_path(_user), do: ~p"/dashboard_student"
+
 end

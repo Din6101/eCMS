@@ -5,6 +5,7 @@ defmodule ECMS.Accounts.User do
   schema "users" do
     field :full_name, :string
     field :email, :string
+    field :role, :string, default: "student"
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
