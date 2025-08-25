@@ -18,6 +18,13 @@ defmodule ECMSWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/", ECMSWeb do
+    pipe_through [:browser]
+
+    get "/", PageController, :home
+
+  end
+
   scope "/admin", ECMSWeb do
     pipe_through [:browser, :require_authenticated_user, :require_admin]
 
@@ -37,11 +44,8 @@ defmodule ECMSWeb.Router do
     end
   end
 
-  scope "/", ECMSWeb do
-
-
-
-    pipe_through [:browser, :require_authenticated_user, :require_student]
+  scope "/student", ECMSWeb do
+    pipe_through [:browser, :require_authenticated_user]
 
     get "/", PageController, :home
 

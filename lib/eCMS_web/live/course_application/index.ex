@@ -1,5 +1,5 @@
 defmodule ECMSWeb.CourseApplicationLive.Index do
-  use ECMSWeb, :live_view
+    use ECMSWeb, :live_view
 
   alias ECMS.Courses
 

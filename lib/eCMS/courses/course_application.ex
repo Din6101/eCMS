@@ -18,6 +18,6 @@ defmodule ECMS.Courses.CourseApplication do
     application
     |> cast(attrs, [:course_id, :user_id, :status, :approval, :notification])
     |> validate_required([:course_id, :user_id, :status, :approval, :notification])
-    |> unique_constraint([:course_id, :user_id, :status, :approval, :notification])
+    |> unique_constraint([:course_id, :user_id], name: :course_applications_course_id_user_id_index)
   end
 end
