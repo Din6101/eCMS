@@ -2,6 +2,7 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
   use ECMSWeb, :live_view
 
   alias ECMS.Courses
+  alias ECMS.Notifications
 
   @impl true
   def mount(_params, _session, socket) do
@@ -18,6 +19,7 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
   end
 
   @impl true
+  @spec handle_event(<<_::32, _::_*8>>, map(), map()) :: {:noreply, map()}
   def handle_event("approve", %{"id" => id}, socket) do
     app = Courses.get_application!(id)
     {:ok, _} = Courses.approve_application(app)
@@ -56,6 +58,34 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      }))}
   end
 
+  def handle_event("send_notification", %{"course_app_id" => course_app_id}, socket) do
+
+    case Notifications.send_notification(course_app_id, "Your course has been approved.") do
+      {:ok, {_admin_notif, _student_notif}} ->
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Notification sent to student.")
+         |> assign(:applications, %{
+          socket.assigns.applications
+          | entries:
+              Enum.map(socket.assigns.applications.entries, fn app ->
+                if app.id == String.to_integer(course_app_id) do
+                  %{app | notification: :sent}
+                else
+                  app
+                end
+              end)
+        })}
+
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to send notification: #{inspect(changeset.errors)}")}
+    end
+  end
+
+
   def handle_event("search", %{"search" => search}, socket) do
     {:noreply,
      socket
@@ -92,4 +122,14 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      }))
      |> assign(:page, page_num)}
   end
+
+  defp notification_status(app) do
+    case Notifications.get_by_application(app.id) do
+      nil -> :unsent
+      _ -> :sent
+    end
+  end
+
+
+
 end

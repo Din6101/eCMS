@@ -49,7 +49,7 @@
         </thead>
         <tbody>
           <%= for app <- @applications.entries do %>
-            <tr class="border-b">
+            <tr class="hover:bg-gray-50">
               <td class="px-4 py-2"><%= app.user.full_name %></td>
               <td class="px-4 py-2"><%= app.course.course_id %></td>
               <td class="px-4 py-2"><%= app.course.title %></td>
@@ -68,20 +68,20 @@
                 <% end %>
               </td>
               <td class="px-4 py-2">
-                <button
-                  phx-click="send_notification"
-                  phx-value-id={app.id}
-                  class={
-                    "px-2 py-1 rounded text-white " <>
-                    case app.notification do
-                      :unsent -> "bg-blue-500 hover:bg-blue-600"
-                      :sent -> "bg-gray-400 cursor-not-allowed"
-                    end
-                  }
-                  disabled={app.notification == :sent}
-                >
-                  📤 <%= String.upcase("#{app.notification}") %>
-                </button>
+                <%= case notification_status(app) do %>
+                  <% :unsent -> %>
+                    <button
+                      phx-click="send_notification"
+                      phx-value-course_app_id={app.id}
+                      class="px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      📤 Send
+                    </button>
+                      <% :sent -> %>
+                        <span class="px-2 py-1 rounded bg-green-500 text-white">
+                          ✅ Sent
+                        </span>
+                      <% end %>
               </td>
               <td class="px-4 py-2">
                 <a href="#" phx-click="delete_application"
@@ -105,7 +105,7 @@
           ◀ Prev
         </button>
 
-        <span class="text-black">
+        <span class="text-white">
           Page <%= @applications.page_number %> of <%= @applications.total_pages %>
         </span>
 
