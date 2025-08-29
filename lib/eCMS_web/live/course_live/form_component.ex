@@ -38,6 +38,31 @@ defmodule ECMSWeb.CourseLive.FormComponent do
         class="w-full h-32 resize-none"
       />
 
+      <!-- Start Date -->
+  <.input
+    field={@form[:start_date]}
+    type="date"
+    label="Start Date"
+    class="w-full"
+  />
+
+  <!-- End Date -->
+  <.input
+    field={@form[:end_date]}
+    type="date"
+    label="End Date"
+    class="w-full"
+  />
+
+  <!-- Venue -->
+  <.input
+    field={@form[:venue]}
+    type="text"
+    label="Venue"
+    placeholder="Enter venue (e.g. Hall A)"
+    class="w-full"
+  />
+
       <:actions>
         <.button
           class="bg-[#2D9CDB] text-white px-4 py-2 rounded-lg font-semibold shadow"
