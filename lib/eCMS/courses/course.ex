@@ -6,6 +6,9 @@ defmodule ECMS.Courses.Course do
     field :description, :string
     field :title, :string
     field :course_id, :string
+    field :start_date, :date
+    field :end_date, :date
+    field :venue, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +16,7 @@ defmodule ECMS.Courses.Course do
   @doc false
   def changeset(course, attrs) do
     course
-    |> cast(attrs, [:course_id, :title, :description])
-    |> validate_required([:course_id, :title, :description])
+    |> cast(attrs, [:course_id, :title, :description, :start_date, :end_date, :venue])
+    |> validate_required([:course_id, :title, :description, :start_date, :end_date, :venue])
   end
 end

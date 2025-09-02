@@ -252,6 +252,6 @@ defmodule ECMSWeb.UserAuth do
 
   # Redirect admins vs normal users after login
 defp signed_in_path(%{role: "admin"}), do: ~p"/admin/dashboard_admin"
-defp signed_in_path(_user), do: ~p"/dashboard_student"
+defp signed_in_path(_user), do: ~p"/student/dashboard_student"
 
 end

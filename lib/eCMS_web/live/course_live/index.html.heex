@@ -56,6 +56,9 @@
             <th class="px-4 py-2 text-left w-[15%]">Course ID</th>
             <th class="px-4 py-2 text-left w-[25%]">Title</th>
             <th class="px-4 py-2 text-left w-[40%]">Description</th>
+            <th class="px-4 py-2 text-left">Start Date</th>
+            <th class="px-4 py-2 text-left">End Date</th>
+            <th class="px-4 py-2 text-left">Venue</th>
             <th class="px-4 py-2 text-right w-[20%]">Actions</th>
           </tr>
         </thead>
@@ -64,6 +67,13 @@
             <td class="px-4 py-2 whitespace-nowrap"><%= course.course_id %></td>
             <td class="px-4 py-2 whitespace-nowrap"><%= course.title %></td>
             <td class="px-4 py-2 whitespace-nowrap"><%= course.description %></td>
+            <td class="px-4 py-2 whitespace-nowrap">
+              <%= course.start_date && Calendar.strftime(course.start_date, "%d-%m-%Y") %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap">
+              <%= course.end_date && Calendar.strftime(course.end_date, "%d-%m-%Y") %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= course.venue %></td>
             <td class="px-4 py-2 text-right whitespace-nowrap">
               <div class="flex justify-end gap-2">
                 <!-- Edit button -->

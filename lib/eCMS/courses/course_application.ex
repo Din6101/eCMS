@@ -6,6 +6,8 @@ defmodule ECMS.Courses.CourseApplication do
   schema "course_applications" do
     belongs_to :course, ECMS.Courses.Course
     belongs_to :user, ECMS.Accounts.User
+    has_many :student_notifications, ECMS.Notifications.StudentNotifications
+    has_many :admin_notifications, ECMS.Notifications.AdminNotifications
 
     field :status, Ecto.Enum, values: [:pending, :approved, :rejected], default: :pending
     field :approval, Ecto.Enum, values: [:unapproved, :approved], default: :unapproved
