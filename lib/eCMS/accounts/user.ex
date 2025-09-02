@@ -39,8 +39,9 @@ defmodule ECMS.Accounts.User do
   """
 def registration_changeset(user, attrs, opts \\ []) do
   user
-  |> cast(attrs, [:full_name, :email, :password]) # 👈 allow :role
-  |> validate_required([:full_name, :email, :password])
+  |> cast(attrs, [:full_name, :email, :password, :role]) # 👈 allow :role
+  |> validate_required([:full_name, :email, :password, :role])
+  |> validate_inclusion(:role, ["student", "trainer", "admin"])
   |> validate_email(opts)
   |> validate_password(opts)
 end

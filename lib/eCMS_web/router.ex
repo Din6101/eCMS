@@ -18,11 +18,19 @@ defmodule ECMSWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/", ECMSWeb do
+    pipe_through [:browser]
+
+    get "/", PageController, :home
+
+
+  end
+
   scope "/admin", ECMSWeb do
     pipe_through [:browser, :require_authenticated_user, :require_admin]
 
     live_session :admin,
-      on_mount: [{ECMSWeb.UserAuth, :ensure_authenticated}],
+      on_mount: [{ECMSWeb.UserAuth, :mount_current_user}, {ECMSWeb.UserAuth, :ensure_authenticated}],
       layout: {ECMSWeb.Layouts, :admin} do   # 👈 force admin layout here
 
       live "/courses", CourseLive.Index, :index
@@ -34,13 +42,12 @@ defmodule ECMSWeb.Router do
 
       live "/dashboard_admin", DashboardAdmin, :index
       live "/course_application", CourseApplicationLive.Index, :index
+      live "/notifications", AdminNotificationsLive.Index, :index
     end
   end
 
-  scope "/", ECMSWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    get "/", PageController, :home
+  scope "/student", ECMSWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_student]
 
     live_session :student,
       on_mount: [{ECMSWeb.UserAuth, :ensure_authenticated}],
@@ -48,6 +55,7 @@ defmodule ECMSWeb.Router do
 
     live "/dashboard_student", DashboardStudent, :index
     live "/course_live/student_course", CourseLive.StudentCourse, :index
+    live "/student_notifications", StudentNotifications.Index, :index
 
     end
   end

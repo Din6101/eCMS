@@ -44,8 +44,15 @@ def list_applications(params \\ %{}) do
     end
 
   # Pagination
-  page_number = Map.get(params, "page", "1") |> String.to_integer()
-  Repo.paginate(query, page: page_number, page_size: 10)
+  page_number =
+    case Map.get(params, "page", "1") do
+      n when is_binary(n) -> String.to_integer(n)
+      n when is_integer(n) -> n
+      _ -> 1
+    end
+
+    Repo.paginate(query, page: page_number, page_size: 10)
+
 end
 
 # Get one application
@@ -91,6 +98,11 @@ end
 
     "CID" <> String.pad_leading(Integer.to_string(next_num), 3, "0")
   end
+
+  def list_all_courses do
+    Repo.all(Course)
+  end
+
 
   @doc """
   Returns the list of courses.
