@@ -74,4 +74,18 @@ defmodule ECMSWeb.ScheduleLive.Index do
 
     {:noreply, stream_delete(socket, :schedules, schedule)}
   end
+
+  def handle_event("show_status_note", %{"schedule" => %{"status" => status}}, socket) do
+    notes = case status do
+      "assigned" -> "The course has been assigned to the trainer, but no action has been taken yet."
+      "invited" -> "The trainer has been invited through the system."
+      "confirmed" -> "The trainer has confirmed the invitation and agreed to attend."
+      "declined" -> "The invitation was declined, the trainer cannot attend."
+      "completed" -> "The course/schedule has been completed."
+      _ -> ""
+    end
+
+    {:noreply, assign(socket, :status_note, notes)}
+  end
+
 end

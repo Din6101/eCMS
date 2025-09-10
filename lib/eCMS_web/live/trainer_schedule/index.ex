@@ -19,36 +19,47 @@ defmodule ECMSWeb.TrainerScheduleLive.Index do
      socket
      |> assign(:page_title, "My Assigned Schedules")
      |> assign(:trainer_id, trainer_id)
-     |> stream(:trainer_schedules, trainer_schedules)}
+     |> stream(:trainer_schedules, trainer_schedules, reset: true)}
   end
-
 
   @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, socket}
   end
 
-
   @impl true
   def handle_event("confirm", %{"id" => id}, socket) do
     ts = Training.get_trainer_schedule!(id)
-    {:ok, _updated} = Training.update_trainer_schedule(ts, %{status: "confirmed"})
 
-    schedules = Training.list_trainer_schedules_for_trainer(socket.assigns.trainer_id)
+    case Training.update_trainer_schedule(ts, %{status: "confirmed"}) do
+      {:ok, _updated} ->
+        schedules = Training.list_trainer_schedules_for_trainer(socket.assigns.trainer_id)
 
-    {:noreply, stream(socket, :trainer_schedules, schedules)}
+        {:noreply,
+         socket
+         |> put_flash(:info, "Schedule confirmed")
+         |> stream(:trainer_schedules, schedules, reset: true)}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to confirm schedule")}
+    end
   end
 
+  @impl true
   def handle_event("decline", %{"id" => id}, socket) do
     ts = Training.get_trainer_schedule!(id)
-    {:ok, _updated} = Training.update_trainer_schedule(ts, %{status: "declined"})
 
-    schedules = Training.list_trainer_schedules_for_trainer(socket.assigns.trainer_id)
+    case Training.update_trainer_schedule(ts, %{status: "declined"}) do
+      {:ok, _updated} ->
+        schedules = Training.list_trainer_schedules_for_trainer(socket.assigns.trainer_id)
 
-    {:noreply, stream(socket, :trainer_schedules, schedules)}
+        {:noreply,
+         socket
+         |> put_flash(:info, "Schedule declined")
+         |> stream(:trainer_schedules, schedules, reset: true)}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to decline schedule")}
+    end
   end
-
-
-
-
 end

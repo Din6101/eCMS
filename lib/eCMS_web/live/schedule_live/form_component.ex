@@ -38,8 +38,18 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
           field={@form[:status]}
           type="select"
           label="Status"
-          options={~w(assigned invited confirmed declined completed)a}
+          options={[
+            {"assigned", "assigned"},
+            {"invited", "invited"},
+            {"confirmed", "confirmed"},
+            {"declined", "declined"},
+            {"completed", "completed"}
+          ]}
         />
+
+        <div class="mt-2 text-sm text-gray-600">
+          <%= @status_note %>
+        </div>
 
         <.input
           field={@form[:notes]}
@@ -57,7 +67,7 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
 
   @impl true
   def update(%{schedule: schedule} = assigns, socket) do
-    courses  = Courses.list_courses()
+    courses = Courses.list_courses()
     trainers = Accounts.list_trainers()
     changeset = Training.change_schedule(schedule)
 
@@ -67,7 +77,8 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
      |> assign(:courses, courses.entries)
      |> assign(:trainers, trainers)
      |> assign(:changeset, changeset)
-     |> assign(:form, to_form(changeset))}
+     |> assign(:form, to_form(changeset))
+     |> assign(:status_note, "")}
   end
 
   @impl true
@@ -77,10 +88,23 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
       |> Training.change_schedule(params)
       |> Map.put(:action, :validate)
 
+    status = params["status"] || ""
+
+    note =
+      case status do
+        "assigned" -> "The course has been assigned to the trainer, but no action has been taken yet."
+        "invited" -> "The trainer has been invited through the system."
+        "confirmed" -> "The trainer has confirmed the invitation and agreed to attend."
+        "declined" -> "The invitation was declined, the trainer cannot attend."
+        "completed" -> "The course/schedule has been completed."
+        _ -> ""
+      end
+
     {:noreply,
      socket
      |> assign(:changeset, changeset)
-     |> assign(:form, to_form(changeset))}
+     |> assign(:form, to_form(changeset))
+     |> assign(:status_note, note)}
   end
 
   @impl true
@@ -88,6 +112,7 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
     save_schedule(socket, socket.assigns.action, params)
   end
 
+  # helpers
   defp save_schedule(socket, :new, params) do
     case Training.create_schedule(params) do
       {:ok, schedule} ->
