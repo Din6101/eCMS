@@ -43,6 +43,24 @@ defmodule ECMSWeb.Router do
       live "/dashboard_admin", DashboardAdmin, :index
       live "/course_application", CourseApplicationLive.Index, :index
       live "/notifications", AdminNotificationsLive.Index, :index
+
+      live "/schedules", ScheduleLive.Index, :index
+      live "/schedules/new", ScheduleLive.Index, :new
+      live "/schedules/:id/edit", ScheduleLive.Index, :edit
+
+      live "/schedules/:id", ScheduleLive.Show, :show
+      live "/schedules/:id/show/edit", ScheduleLive.Show, :edit
+    end
+  end
+
+  scope "/trainer", ECMSWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_trainer]
+
+    live_session :trainer,
+      on_mount: [{ECMSWeb.UserAuth, :mount_current_user}, {ECMSWeb.UserAuth, :ensure_authenticated}],
+      layout: {ECMSWeb.Layouts, :trainer} do
+      live "/dashboard_trainer", DashboardTrainer, :index
+      live "/trainer_schedule", TrainerScheduleLive.Index, :index
     end
   end
 
