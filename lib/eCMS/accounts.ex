@@ -9,6 +9,12 @@ defmodule ECMS.Accounts do
   alias ECMS.Accounts.{User, UserToken, UserNotifier}
 
 
+  def list_trainers do
+    import Ecto.Query
+    from(u in User, where: u.role == "trainer")
+    |> Repo.all()
+  end
+
 
   def list_users do
     Repo.all(User)

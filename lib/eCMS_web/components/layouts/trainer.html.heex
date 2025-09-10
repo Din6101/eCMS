@@ -8,39 +8,9 @@
     </div>
 
     <nav class="flex-1 px-4 py-6 space-y-3">
-      <.link navigate={~p"/admin/dashboard_admin"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
-  
-  <div
-    class="flex items-center justify-between py-2 px-3 cursor-pointer hover:bg-[#05897D] rounded"
-    phx-click={JS.toggle(to: "#course-submenu") |> JS.toggle_class("rotate-90", to: "#chev-course")}
-  >
-    <span>Course</span>
-    <!-- Arrow -->
-    <span id="chev-course" class="text-white transform transition-transform duration-200">
-      ▶
-    </span>
-  </div>
-
-  <!-- Submenu -->
-  <ul id="course-submenu" class="ml-6 mt-1 hidden space-y-1">
-    <li>
-      <.link navigate={~p"/admin/courses"} class="block py-1 px-2 hover:bg-tealLight">
-        Add Course
-      </.link>
-    </li>
-    <li>
-      <.link navigate={~p"/admin/course_application"} class="block py-1 px-2 hover:bg-tealLight">
-         Course Applications
-      </.link>
-    </li>
-    <li>
-      <.link navigate={~p"/admin/schedules"} class="block py-1 px-2 hover:bg-tealLight">
-        Course Schedule
-      </.link>
-    </li>
-  </ul>
-
-      <.link navigate={~p"/admin/notifications"} class="block px-3 py-2 rounded hover:bg-tealLight">Notifications</.link>
+      <.link navigate={~p"/trainer/dashboard_trainer"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
+      <.link navigate={~p"/trainer/trainer_schedule"} class="block px-3 py-2 rounded hover:bg-tealLight">Schedule</.link>
+      <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Enrollments</.link>
       <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Results</.link>
       <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Certifications</.link>
     </nav>
@@ -56,7 +26,7 @@
         <!-- Avatar -->
           <!-- Always show default avatar -->
           <img 
-          src={~p"/images/clipart153139-12-349.png"} 
+          src={~p"/images/clipart153139-12-349.png"}
           alt="User avatar" 
           class="w-6 h-6 rounded-full object-cover"
           />
@@ -70,7 +40,7 @@
               Admin
             <% end %>
           </p>
-          <p class="text-xs text-gray-400">Administrator</p>
+          <p class="text-xs text-gray-400">Trainer</p>
         </div>
 
         <!-- Dropdown Icon -->
