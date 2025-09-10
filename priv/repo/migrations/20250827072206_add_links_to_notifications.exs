@@ -10,8 +10,7 @@ defmodule ECMS.Repo.Migrations.AddLinksToNotifications do
       add :admin_notification_id, references(:admin_notifications, on_delete: :delete_all)
     end
 
-    create index(:admin_notifications, [:course_application_id])
-    create index(:student_notifications, [:course_application_id])
-    create index(:student_notifications, [:admin_notification_id])
+    create_if_not_exists index(:admin_notifications, [:course_application_id])
+    create_if_not_exists index(:student_notifications, [:course_application_id])
   end
 end

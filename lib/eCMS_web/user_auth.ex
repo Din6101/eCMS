@@ -59,6 +59,17 @@ defmodule ECMSWeb.UserAuth do
     end
   end
 
+  def require_trainer(conn, _opts) do
+    if get_session(conn, :role) == "trainer" do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Unauthorized")
+      |> redirect(to: "/")
+      |> halt()
+    end
+  end
+
 
 
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
