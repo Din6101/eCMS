@@ -25,7 +25,10 @@ defmodule ECMS.Training do
     |> Repo.preload([:course, :trainer, :trainer_schedules])
   end
 
-  @doc "Create a schedule (also auto-create trainer_schedule if trainer_id diberikan)"
+  @doc """
+  Create a schedule (jika trainer_id diberi, auto-create trainer_schedule).
+  Status ikut apa yang admin pilih dalam form (default: "assigned").
+  """
   def create_schedule(attrs \\ %{}) do
     %Schedule{}
     |> Schedule.changeset(attrs)
@@ -33,12 +36,14 @@ defmodule ECMS.Training do
     |> case do
       {:ok, schedule} ->
         if trainer_id = attrs["trainer_id"] || attrs[:trainer_id] do
+          status = attrs["status"] || attrs[:status] || "assigned"
+
           %TrainerSchedule{}
           |> TrainerSchedule.changeset(%{
             schedule_id: schedule.id,
             trainer_id: trainer_id,
-            status: "assigned",
-            notes: attrs["notes"] || attrs[:notes]   # ⬅️ notes ikut form admin
+            status: status,
+            notes: attrs["notes"] || attrs[:notes]
           })
           |> Repo.insert()
         end
@@ -50,6 +55,10 @@ defmodule ECMS.Training do
     end
   end
 
+  @doc """
+  Update schedule. Jika ada `notes` atau `status` dalam attrs,
+  semua trainer_schedules yang berkait akan dikemaskini juga.
+  """
   def update_schedule(%Schedule{} = schedule, attrs) do
     Repo.transaction(fn ->
       {:ok, updated_schedule} =
@@ -57,17 +66,29 @@ defmodule ECMS.Training do
         |> Schedule.changeset(attrs)
         |> Repo.update()
 
-      # Update semua trainer_schedules yang berkait dengan schedule ni
-      if notes = attrs["notes"] || attrs[:notes] do
+      updates = []
+      updates =
+        if notes = attrs["notes"] || attrs[:notes] do
+          Keyword.put(updates, :notes, notes)
+        else
+          updates
+        end
+
+      updates =
+        if status = attrs["status"] || attrs[:status] do
+          Keyword.put(updates, :status, status)
+        else
+          updates
+        end
+
+      if updates != [] do
         from(ts in TrainerSchedule, where: ts.schedule_id == ^schedule.id)
-        |> Repo.update_all(set: [notes: notes])
+        |> Repo.update_all(set: updates)
       end
 
       updated_schedule
     end)
   end
-
-
 
   @doc "Delete a schedule"
   def delete_schedule(%Schedule{} = schedule) do
@@ -120,20 +141,19 @@ defmodule ECMS.Training do
   end
 
   @doc "Update trainer schedule (contoh untuk tukar status)"
-  # dalam Training context
-def update_trainer_schedule(%TrainerSchedule{} = ts, attrs) do
-  ts
-  |> TrainerSchedule.changeset(attrs)
-  |> Repo.update()
-  |> case do
-    {:ok, updated} ->
-      Phoenix.PubSub.broadcast(ECMS.PubSub, "trainer_schedules", {:updated, updated})
-      {:ok, updated}
+  def update_trainer_schedule(%TrainerSchedule{} = ts, attrs) do
+    ts
+    |> TrainerSchedule.changeset(attrs)
+    |> Repo.update()
+    |> case do
+      {:ok, updated} ->
+        Phoenix.PubSub.broadcast(ECMS.PubSub, "trainer_schedules", {:updated, updated})
+        {:ok, updated}
 
-    error -> error
+      error ->
+        error
+    end
   end
-end
-
 
   @doc "Delete trainer schedule"
   def delete_trainer_schedule(%TrainerSchedule{} = ts) do
