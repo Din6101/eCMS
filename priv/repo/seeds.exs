@@ -13,19 +13,41 @@
 alias ECMS.Accounts
 
 # Default Admin
-{:ok, _admin} =
-  Accounts.register_user(%{
-    full_name: "Default Admin",
-    email: "admin00@test.com",
-    password: "123456789abcd",
-    role: "admin"
-  })
+case Accounts.get_user_by_email("admin00@test.com") do
+  nil ->
+    Accounts.register_user(%{
+      full_name: "Admin",
+      email: "admin00@test.com",
+      password: "123456789abcd",
+      role: "admin"
+    })
+    IO.puts("✅ Admin created")
 
-# Default Trainer
-{:ok, _trainer} =
-  Accounts.register_user(%{
-    full_name: "Default Trainer",
-    email: "trainer00@test.com",
-    password: "123456789abcd",
-    role: "trainer"
-  })
+  _user ->
+    IO.puts("⚠️ Admin already exists, skipping...")
+end
+
+# Default Trainers
+trainers = [
+  %{full_name: "Elvin",  email: "trainer00@test.com"},
+  %{full_name: "Janet",  email: "trainer100@test.com"},
+  %{full_name: "Ahmad",  email: "trainer200@test.com"},
+  %{full_name: "Siti",   email: "trainer300@test.com"},
+  %{full_name: "Rahman", email: "trainer400@test.com"}
+]
+
+for t <- trainers do
+  case Accounts.get_user_by_email(t.email) do
+    nil ->
+      Accounts.register_user(%{
+        full_name: t.full_name,
+        email: t.email,
+        password: "123456789abcd",
+        role: "trainer"
+      })
+      IO.puts("✅ Created trainer #{t.full_name}")
+
+    _user ->
+      IO.puts("⚠️ Trainer #{t.full_name} already exists, skipping...")
+  end
+end
