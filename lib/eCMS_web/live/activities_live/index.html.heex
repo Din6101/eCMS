@@ -1,0 +1,43 @@
+<.header>
+  Listing Activity
+  <:actions>
+    <.link patch={~p"/admin/activity/new"}>
+      <.button>New Activities</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="activity"
+  rows={@streams.activity}
+  row_click={fn {_id, activities} -> JS.navigate(~p"/admin/activity/#{activities}") end}
+>
+  <:col :let={{_id, activities}} label="Description">{activities.description}</:col>
+  <:col :let={{_id, activities}} label="Date">{activities.date}</:col>
+  <:col :let={{_id, activities}} label="Time">{activities.time}</:col>
+  <:action :let={{_id, activities}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/activity/#{activities}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/activity/#{activities}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, activities}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: activities.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="activities-modal" show on_cancel={JS.patch(~p"/admin/activity")}>
+  <.live_component
+    module={ECMSWeb.ActivitiesLive.FormComponent}
+    id={@activities.id || :new}
+    title={@page_title}
+    action={@live_action}
+    activities={@activities}
+    patch={~p"/admin/activity"}
+  />
+</.modal>

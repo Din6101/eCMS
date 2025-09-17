@@ -50,6 +50,19 @@ defmodule ECMSWeb.Router do
 
       live "/schedules/:id", ScheduleLive.Show, :show
       live "/schedules/:id/show/edit", ScheduleLive.Show, :edit
+
+      live "/live_events", LiveEventLive.Index, :index
+      live "/live_events/new", LiveEventLive.Index, :new
+      live "/live_events/:id/edit", LiveEventLive.Index, :edit
+      live "/live_events/:id", LiveEventLive.Show, :show
+      live "/live_events/:id/show/edit", LiveEventLive.Show, :edit
+
+      live "/activity", ActivitiesLive.Index, :index
+      live "/activity/new", ActivitiesLive.Index, :new
+      live "/activity/:id/edit", ActivitiesLive.Index, :edit
+
+      live "/activity/:id", ActivitiesLive.Show, :show
+      live "/activity/:id/show/edit", ActivitiesLive.Show, :edit
     end
   end
 
@@ -61,6 +74,15 @@ defmodule ECMSWeb.Router do
       layout: {ECMSWeb.Layouts, :trainer} do
       live "/dashboard_trainer", DashboardTrainer, :index
       live "/trainer_schedule", TrainerScheduleLive.Index, :index
+
+      live "/enrollments", EnrollmentLive.Index, :index
+      live "/enrollments/new", EnrollmentLive.Index, :new
+      live "/enrollments/:id/edit", EnrollmentLive.Index, :edit
+
+      live "/enrollments/:id", EnrollmentLive.Show, :show
+      live "/enrollments/:id/show/edit", EnrollmentLive.Show, :edit
+
+
     end
   end
 
