@@ -119,32 +119,35 @@ def create_admin_notification(attrs \\ %{}) do
       |> AdminNotifications.changeset(attrs)
       |> Repo.insert()
 
-    # 2. Cari semua student yang apply course ni
-    course_apps =
-      Repo.all(
-        from ca in ECMS.Courses.CourseApplication,
-          where: ca.course_id == ^attrs["course_id"],
-          preload: [:user]
-      )
+    # ✅ Optional logic to also notify students — only if flag set
+    if Map.get(attrs, "notify_students", false) do
+      # 2. Cari semua student yang apply course ni
+      course_apps =
+        Repo.all(
+          from ca in ECMS.Courses.CourseApplication,
+            where: ca.course_id == ^attrs["course_id"],
+            preload: [:user]
+        )
 
-    # 3. Simpan student notifications untuk setiap student
-    student_notifs =
-    Enum.each(course_apps, fn app ->
-      %StudentNotifications{}
-      |> StudentNotifications.changeset(%{
-        student_id: app.user_id,
-        course_application_id: app.id,
-        course_id: app.course_id,
-        admin_notification_id: admin_notif.id,
-        message: attrs["message"],
-        sent_at: NaiveDateTime.utc_now()
-      })
-      |> Repo.insert()
-    end)
+      # 3. Simpan student notifications untuk setiap student
+      Enum.each(course_apps, fn app ->
+        %StudentNotifications{}
+        |> StudentNotifications.changeset(%{
+          student_id: app.user_id,
+          course_application_id: app.id,
+          course_id: app.course_id,
+          admin_notification_id: admin_notif.id,
+          message: attrs["message"],
+          sent_at: NaiveDateTime.utc_now()
+        })
+        |> Repo.insert()
+      end)
+    end
 
-    {admin_notif, student_notifs}
+    admin_notif
   end)
 end
+
 
 # Mark as read
 def mark_admin_as_read(notification) do
