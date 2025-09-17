@@ -6,22 +6,7 @@ defmodule ECMSWeb.ScheduleLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    # bila connected, setup timer untuk auto refresh
-    if connected?(socket), do: :timer.send_interval(5_000, self(), :reload)
-
-    schedules =
-      Training.list_schedules()
-      |> ECMS.Repo.preload([
-        :course,
-        trainer_schedules: [:trainer]
-      ])
-
-
-    {:ok,
-     socket
-     |> stream(:schedules, schedules)
-     |> assign(:schedule, nil)
-     |> assign(:page_title, "Listing Schedules")}
+    {:ok, stream(socket, :course_schedules, Training.list_course_schedules())}
   end
 
   @impl true
@@ -31,61 +16,33 @@ defmodule ECMSWeb.ScheduleLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Schedule")
-    |> assign(:schedule, Training.get_schedule!(id))
+    |> assign(:page_title, "Edit Course Schedule")
+    |> assign(:course_schedule, Training.get_course_schedule!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Schedule")
-    |> assign(:schedule, %Schedule{})
+    |> assign(:page_title, "New Course Schedule")
+    |> assign(:course_schedule, %CourseSchedule{})
   end
 
   defp apply_action(socket, :index, _params) do
-    schedules = Training.list_schedules()
-    |> ECMS.Repo.preload([
-      :course,
-      trainer_schedules: [:trainer]
-    ])
-
     socket
-    |> assign(:page_title, "Listing Schedules")
-    |> assign(:schedule, nil)
-    |> stream(:schedules, schedules, reset: true)
+    |> assign(:page_title, "Course Schedules")
+    |> assign(:course_schedule, nil)
   end
 
   @impl true
-  def handle_info(:reload, socket) do
-    schedules = Training.list_schedules()
-    |> ECMS.Repo.preload([:course, :trainer, trainer_schedules: [:trainer]])
-    {:noreply, stream(socket, :schedules, schedules, reset: true)}
-  end
-
-  @impl true
-  def handle_info({ECMSWeb.ScheduleLive.FormComponent, {:saved, schedule}}, socket) do
-    schedule = ECMS.Repo.preload(schedule, [:course, :trainer])
-    {:noreply, stream_insert(socket, :schedules, schedule)}
+  def handle_info({ECMSWeb.CourseScheduleLive.FormComponent, {:saved, course_schedule}}, socket) do
+    {:noreply, stream_insert(socket, :course_schedules, course_schedule)}
   end
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    schedule = Training.get_schedule!(id)
-    {:ok, _} = Training.delete_schedule(schedule)
+    course_schedule = Training.get_course_schedule!(id)
+    {:ok, _} = Training.delete_course_schedule(course_schedule)
 
-    {:noreply, stream_delete(socket, :schedules, schedule)}
-  end
-
-  def handle_event("show_status_note", %{"schedule" => %{"status" => status}}, socket) do
-    notes = case status do
-      "assigned" -> "The course has been assigned to the trainer, but no action has been taken yet."
-      "invited" -> "The trainer has been invited through the system."
-      "confirmed" -> "The trainer has confirmed the invitation and agreed to attend."
-      "declined" -> "The invitation was declined, the trainer cannot attend."
-      "completed" -> "The course/schedule has been completed."
-      _ -> ""
-    end
-
-    {:noreply, assign(socket, :status_note, notes)}
+    {:noreply, stream_delete(socket, :course_schedules, course_schedule)}
   end
 
 end
