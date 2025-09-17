@@ -6,7 +6,7 @@ defmodule ECMSWeb.ScheduleLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :course_schedules, Training.list_course_schedules())}
+    {:ok, stream(socket, :course_schedules, Training.list_schedules())}
   end
 
   @impl true
@@ -17,13 +17,13 @@ defmodule ECMSWeb.ScheduleLive.Index do
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Course Schedule")
-    |> assign(:course_schedule, Training.get_course_schedule!(id))
+    |> assign(:course_schedule, Training.get_schedule!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "New Course Schedule")
-    |> assign(:course_schedule, %CourseSchedule{})
+    |> assign(:schedule, %Schedule{})
   end
 
   defp apply_action(socket, :index, _params) do
@@ -33,16 +33,16 @@ defmodule ECMSWeb.ScheduleLive.Index do
   end
 
   @impl true
-  def handle_info({ECMSWeb.CourseScheduleLive.FormComponent, {:saved, course_schedule}}, socket) do
-    {:noreply, stream_insert(socket, :course_schedules, course_schedule)}
+  def handle_info({ECMSWeb.ScheduleLive.FormComponent, {:saved, schedule}}, socket) do
+    {:noreply, stream_insert(socket, :schedules, schedule)}
   end
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    course_schedule = Training.get_course_schedule!(id)
-    {:ok, _} = Training.delete_course_schedule(course_schedule)
+    schedule = Training.get_schedule!(id)
+    {:ok, _} = Training.delete_schedule(schedule)
 
-    {:noreply, stream_delete(socket, :course_schedules, course_schedule)}
+    {:noreply, stream_delete(socket, :schedules, schedule)}
   end
 
 end
