@@ -1,78 +1,109 @@
-<.header class="flex justify-between items-center px-8 py-6">
-  <h1 class="text-3xl font-bold text-white flex items-center gap-2">
-  My Assigned Schedules
-  </h1>
-</.header>
+<div class="min-h-screen bg-[#06A295] text-white p-6 font-sans">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">📅 My Schedule</h1>
 
-<main class="flex-1 flex justify-center items-start p-6 w-full">
-  <div class="w-full px-6 py-8">
-    <table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="px-4 py-2 text-left">Course</th>
-          <th class="px-4 py-2 text-left">Status</th>
-          <th class="px-4 py-2 text-left">Notes</th>
-          <th class="px-4 py-2 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for {id, ts} <- @streams.trainer_schedules do %>
-          <tr id={id} class="border-b last:border-0 hover:bg-gray-50 transition">
-            
-            <!-- Course -->
-            <td class="px-4 py-2 font-medium text-gray-900">
-              <%= ts.schedule.course.title %>
-            </td>
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <%= for schedule <- @schedules do %>
+        <div id={"schedule-#{schedule.id}"} class="bg-white text-black rounded-lg shadow-lg p-6">
+          <!-- Header -->
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold text-[#06A295]">
+              <%= schedule.course.title %>
+            </h3>
+            <span class={[
+              "px-2 py-1 text-xs font-semibold rounded-full",
+              case schedule.status do
+                :assigned -> "bg-blue-100 text-blue-800"
+                :invited -> "bg-purple-100 text-purple-800"
+                :confirmed -> "bg-green-100 text-green-800"
+                :completed -> "bg-gray-100 text-gray-800"
+                :decline -> "bg-red-100 text-red-800"
+                _ -> "bg-gray-100 text-gray-800"
+              end
+            ]}>
+              <%= schedule.status |> Atom.to_string() |> String.capitalize() %>
+            </span>
+          </div>
 
-            <!-- Status -->
-            <td class="px-4 py-2">
-              <span class={
-                case ts.status do
-                  "assigned" -> "px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800"
-                  "confirmed" -> "px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800"
-                  "completed" -> "px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800"
-                  "declined" -> "px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800"
-                  _ -> "px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800"
-                end
-              }>
-                <%= String.capitalize(ts.status || "—") %>
+          <!-- Details -->
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <span class="text-gray-500 w-20">Date:</span>
+              <span class="font-medium">
+                <%= if schedule.schedule_date do %>
+                  <%= Calendar.strftime(schedule.schedule_date, "%d %B %Y") %>
+                <% else %>
+                  <span class="italic text-gray-400">TBD</span>
+                <% end %>
               </span>
-            </td>
+            </div>
 
-            <!-- Notes -->
-            <td class="px-4 py-2 text-gray-600">
-              <%= if ts.notes && ts.notes != "" do %>
-                <%= ts.notes %>
-              <% else %>
-                <span class="italic text-gray-400">—</span>
-              <% end %>
-            </td>
+            <div class="flex items-center">
+              <span class="text-gray-500 w-20">Time:</span>
+              <span class="font-medium">
+                <%= if schedule.schedule_time do %>
+                  <%= Calendar.strftime(schedule.schedule_time, "%H:%M") %>
+                <% else %>
+                  <span class="italic text-gray-400">TBD</span>
+                <% end %>
+              </span>
+            </div>
 
-            <td class="px-3 py-2 space-x-2">
-              <%= if ts.status == "assigned" do %>
-                <.button
-                phx-click="confirm"
-                phx-value-id={ts.id}
-                class="bg-blue-500 text-white px-2 py-1 rounded"
+            <div class="flex items-center">
+              <span class="text-gray-500 w-20">Duration:</span>
+              <span class="font-medium"><%= schedule.duration %> minutes</span>
+            </div>
+
+            <div class="flex items-center">
+              <span class="text-gray-500 w-20">Venue:</span>
+              <span class="font-medium"><%= schedule.venue || "TBD" %></span>
+            </div>
+
+            <%= if schedule.notes do %>
+              <div class="pt-2 border-t">
+                <span class="text-gray-500 text-sm">Notes:</span>
+                <p class="text-sm text-gray-700 mt-1"><%= schedule.notes %></p>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Action Buttons -->
+          <%= if schedule.status in [:assigned, :invited] do %>
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <div class="flex space-x-3">
+                <button
+                  phx-click="accept_schedule"
+                  phx-value-id={schedule.id}
+                  class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
                 >
-                  Confirm
-                </.button>
-                <.button
-                phx-click="decline"
-                phx-value-id={ts.id}
-                class="bg-red-500 text-white px-2 py-1 rounded"
+                  ✅ Accept
+                </button>
+                <button
+                  phx-click="decline_schedule"
+                  phx-value-id={schedule.id}
+                  class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
                 >
-                  Decline
-                </.button>
-              <% else %>
-                <span class="text-gray-500 italic">No actions</span>
-              <% end %>
-          </td>
+                  ❌ Decline
+                </button>
+              </div>
+            </div>
+          <% end %>
 
+          <!-- Status Description -->
+          <div class="mt-3 p-2 bg-gray-50 rounded text-xs text-gray-600">
+            <%= get_status_description(schedule.status) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
 
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <!-- Empty State -->
+    <%= if Enum.empty?(@schedules) do %>
+      <div class="bg-white text-black rounded-lg shadow-lg p-12 text-center">
+        <div class="text-6xl mb-4">📅</div>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Schedules Yet</h3>
+        <p class="text-gray-500">You don't have any course schedules assigned yet.</p>
+      </div>
+    <% end %>
   </div>
-</main>
+</div>

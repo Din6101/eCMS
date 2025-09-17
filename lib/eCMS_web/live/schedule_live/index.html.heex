@@ -1,103 +1,104 @@
-<header class="flex justify-between items-center px-8 py-6">
-  <h1 class="text-3xl font-bold text-white flex items-center gap-2">
-    List Schedule
-  </h1>
-
-  <!-- Add new course button -->
-  <.link
-    patch={~p"/admin/schedules/new"}
-    class="px-4 py-2 bg-[#5fd6cf] hover:bg-[#04675F] text-black font-semibold rounded shadow-md transition"
-  >
-    ➕ Add New Schedule
-  </.link>
-</header>
-
-<main class="flex-1 flex justify-center items-start p-6 w-full">
-  <div class="w-full px-6 py-8">
-    <table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="px-4 py-2 text-left">Course</th>
-          <th class="px-4 py-2 text-left">Trainers</th>
-          <th class="px-4 py-2 text-left">Status</th>
-          <th class="px-4 py-2 text-left">Notes</th>
-          <th class="px-4 py-2 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody
-        id="schedules"
-        phx-update="stream"
+<div class="min-h-screen bg-[#06A295] text-white p-6 font-sans">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">📅 Course Schedules</h1>
+      <.link
+        patch={~p"/admin/schedules/new"}
+        class="bg-white text-[#06A295] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
       >
-        <%= for {id, schedule} <- @streams.schedules do %>
-          <tr id={id} class="hover:bg-gray-50 align-top">
-            <!-- Course -->
-            <td class="px-3 py-2"><%= schedule.course.title %></td>
+        + New Schedule
+      </.link>
+    </div>
 
-            <!-- Trainer(s) -->
-            <td class="px-3 py-2">
-              <%= for ts <- schedule.trainer_schedules do %>
-                <div><%= ts.trainer.full_name %></div>
-              <% end %>
-            </td>
+    <div class="bg-white text-black rounded-lg shadow-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trainer</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venue</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr :for={{dom_id, schedule} <- @streams.course_schedules} id={dom_id}>
 
-            <!-- Status per trainer -->
-            <td class="px-3 py-2">
-              <%= for ts <- schedule.trainer_schedules do %>
-                <span class={
-                  case ts.status do
-                    "assigned" -> "px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800"
-                    "confirmed" -> "px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-800"
-                    "completed" -> "px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-800"
-                    "declined" -> "px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-800"
-                    _ -> "px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800"
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= schedule.course.title %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= schedule.trainer.full_name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <div>
+                  <div>
+                    <%= if schedule.schedule_date, do: Calendar.strftime(schedule.schedule_date, "%d %b %Y"), else: "TBD" %>
+                  </div>
+                  <div class="text-gray-500">
+                    <%= if schedule.schedule_time, do: Calendar.strftime(schedule.schedule_time, "%H:%M"), else: "--:--" %>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= schedule.duration %> min
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= schedule.venue || "-" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class={[
+                  "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
+                  case schedule.status do
+                    :assigned -> "bg-blue-100 text-blue-800"
+                    :invited -> "bg-purple-100 text-purple-800"
+                    :confirmed -> "bg-green-100 text-green-800"
+                    :completed -> "bg-gray-100 text-gray-800"
+                    :declined -> "bg-red-100 text-red-800"
                   end
-                }>
-                  <%= ts.status %>
-                </span><br>
-              <% end %>
-            </td>
-
-            <!-- Notes per trainer -->
-            <td class="px-3 py-2">
-              <%= for ts <- schedule.trainer_schedules do %>
-                <div><%= ts.notes %></div>
-              <% end %>
-            </td>
-
-            <!-- Actions -->
-            <td class="px-3 py-2">
-              <div class="flex gap-2">
-                <.link patch={~p"/admin/schedules/#{schedule}/edit"} class="text-blue-600 underline">
-                  Edit
-                </.link>
-                <.link
-                  phx-click={JS.push("delete", value: %{id: schedule.id}) |> hide("##{id}")}
-                  data-confirm="Are you sure?"
-                  class="text-red-600 underline"
-                >
-                  Delete
-                </.link>
-              </div>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+                ]}>
+                  <%= schedule.status |> Atom.to_string() |> String.capitalize() %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                <%= schedule.notes || "-" %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex space-x-2">
+                  <.link
+                    patch={~p"/admin/schedules/#{schedule}/edit"}
+                    class="text-[#06A295] hover:text-[#058a7a]"
+                  >
+                    Edit
+                  </.link>
+                  <.link
+                    phx-click={JS.push("delete", value: %{id: schedule.id}) |> hide("##{dom_id}")}
+                    data-confirm="Are you sure?"
+                    class="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </.link>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</main>
 
-<.modal
-  :if={@live_action in [:new, :edit]}
-  id="schedule-modal"
-  show
-  on_cancel={JS.patch(~p"/admin/schedules")}
->
-  <.live_component
-    module={ECMSWeb.ScheduleLive.FormComponent}
-    id={@schedule.id || :new}
-    title={@page_title}
-    action={@live_action}
-    schedule={@schedule}
-    patch={~p"/admin/schedules"}
-  />
-</.modal>
+  <.modal :if={@live_action in [:new, :edit]} id="schedule-modal" show on_cancel={JS.patch(~p"/admin/schedules")}>
+    <.live_component
+      module={ECMSWeb.ScheduleLive.FormComponent}
+      id={@schedule.id || :new}
+      title={@page_title}
+      action={@live_action}
+      schedule={@schedule}
+      return_to={~p"/admin/schedules"}
+    />
+  </.modal>
+</div>
