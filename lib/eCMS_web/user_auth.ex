@@ -262,7 +262,11 @@ defmodule ECMSWeb.UserAuth do
   defp maybe_store_return_to(conn), do: conn
 
   # Redirect admins vs normal users after login
+# Redirect berdasarkan role
 defp signed_in_path(%{role: "admin"}), do: ~p"/admin/dashboard_admin"
-defp signed_in_path(_user), do: ~p"/student/dashboard_student"
+defp signed_in_path(%{role: "trainer"}), do: ~p"/trainer/dashboard_trainer"
+defp signed_in_path(%{role: "student"}), do: ~p"/student/dashboard_student"
+defp signed_in_path(_), do: ~p"/"  # fallback kalau role tak dikenali
+
 
 end

@@ -146,14 +146,13 @@ end
   end
 
   defp save_enrollment(socket, :new, enrollment_params) do
-    # enrollment_params is already %{"user_id" => "...", "course_id" => "...", ...}
-
     # Convert milestone list to comma-separated string
     enrollment_params =
       case Map.get(enrollment_params, "milestone") do
         milestones when is_list(milestones) ->
           Map.put(enrollment_params, "milestone", Enum.join(milestones, ","))
-        _ -> enrollment_params
+        _ ->
+          enrollment_params
       end
 
     # Convert numeric fields to integers
@@ -172,20 +171,58 @@ end
         val -> val
       end)
 
-      case ECMS.Training.create_enrollment(enrollment_params) do
-        {:ok, enrollment} ->
-          # **Send this message to notify parent LiveView**
-          send(self(), {__MODULE__, {:saved, enrollment}})
+    case ECMS.Training.create_enrollment(enrollment_params) do
+      {:ok, enrollment} ->
+        send(self(), {__MODULE__, {:saved, enrollment}})
 
-          {:noreply,
-           socket
-           |> put_flash(:info, "Enrollment created successfully")
-           |> push_patch(to: socket.assigns.patch)}
+        {:noreply,
+         socket
+         |> put_flash(:info, "Enrollment created successfully")
+         |> push_patch(to: socket.assigns.patch)}
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          {:noreply, assign(socket, form: to_form(changeset))}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, form: to_form(changeset))}
+    end
+  end
+
+  defp save_enrollment(socket, :edit, enrollment_params) do
+    # Convert milestone list to comma-separated string
+    enrollment_params =
+      case Map.get(enrollment_params, "milestone") do
+        milestones when is_list(milestones) ->
+          Map.put(enrollment_params, "milestone", Enum.join(milestones, ","))
+        _ ->
+          enrollment_params
       end
 
+    # Convert numeric fields to integers
+    enrollment_params =
+      enrollment_params
+      |> Map.update!("progress", fn
+        val when is_binary(val) -> String.to_integer(val)
+        val -> val
+      end)
+      |> Map.update!("user_id", fn
+        val when is_binary(val) -> String.to_integer(val)
+        val -> val
+      end)
+      |> Map.update!("course_id", fn
+        val when is_binary(val) -> String.to_integer(val)
+        val -> val
+      end)
+
+    case Training.update_enrollment(socket.assigns.enrollment, enrollment_params) do
+      {:ok, enrollment} ->
+        send(self(), {__MODULE__, {:saved, enrollment}})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Enrollment updated successfully")
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, form: to_form(changeset))}
+    end
   end
 
 
