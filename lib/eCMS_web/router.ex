@@ -63,6 +63,8 @@ defmodule ECMSWeb.Router do
 
       live "/activity/:id", ActivitiesLive.Show, :show
       live "/activity/:id/show/edit", ActivitiesLive.Show, :edit
+
+      live "/admin_result", AdminResult.Index, :index
     end
   end
 
@@ -82,6 +84,12 @@ defmodule ECMSWeb.Router do
       live "/enrollments/:id", EnrollmentLive.Show, :show
       live "/enrollments/:id/show/edit", EnrollmentLive.Show, :edit
 
+      live "/results", ResultLive.Index, :index
+      live "/results/new", ResultLive.Index, :new
+      live "/results/:id/edit", ResultLive.Index, :edit
+
+      live "/results/:id", ResultLive.Show, :show
+      live "/results/:id/show/edit", ResultLive.Show, :edit
 
     end
   end
@@ -96,6 +104,7 @@ defmodule ECMSWeb.Router do
     live "/dashboard_student", DashboardStudent, :index
     live "/course_live/student_course", CourseLive.StudentCourse, :index
     live "/student_notifications", StudentNotifications.Index, :index
+    live "/student_results", StudentResults.Index, :index
 
     end
   end
