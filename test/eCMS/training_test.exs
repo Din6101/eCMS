@@ -236,4 +236,62 @@ defmodule ECMS.TrainingTest do
       assert %Ecto.Changeset{} = Training.change_activities(activities)
     end
   end
+
+  describe "results" do
+    alias ECMS.Training.Result
+
+    import ECMS.TrainingFixtures
+
+    @invalid_attrs %{status: nil, final_score: nil, certification: nil}
+
+    test "list_results/0 returns all results" do
+      result = result_fixture()
+      assert Training.list_results() == [result]
+    end
+
+    test "get_result!/1 returns the result with given id" do
+      result = result_fixture()
+      assert Training.get_result!(result.id) == result
+    end
+
+    test "create_result/1 with valid data creates a result" do
+      valid_attrs = %{status: "some status", final_score: 42, certification: "some certification"}
+
+      assert {:ok, %Result{} = result} = Training.create_result(valid_attrs)
+      assert result.status == "some status"
+      assert result.final_score == 42
+      assert result.certification == "some certification"
+    end
+
+    test "create_result/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Training.create_result(@invalid_attrs)
+    end
+
+    test "update_result/2 with valid data updates the result" do
+      result = result_fixture()
+      update_attrs = %{status: "some updated status", final_score: 43, certification: "some updated certification"}
+
+      assert {:ok, %Result{} = result} = Training.update_result(result, update_attrs)
+      assert result.status == "some updated status"
+      assert result.final_score == 43
+      assert result.certification == "some updated certification"
+    end
+
+    test "update_result/2 with invalid data returns error changeset" do
+      result = result_fixture()
+      assert {:error, %Ecto.Changeset{}} = Training.update_result(result, @invalid_attrs)
+      assert result == Training.get_result!(result.id)
+    end
+
+    test "delete_result/1 deletes the result" do
+      result = result_fixture()
+      assert {:ok, %Result{}} = Training.delete_result(result)
+      assert_raise Ecto.NoResultsError, fn -> Training.get_result!(result.id) end
+    end
+
+    test "change_result/1 returns a result changeset" do
+      result = result_fixture()
+      assert %Ecto.Changeset{} = Training.change_result(result)
+    end
+  end
 end

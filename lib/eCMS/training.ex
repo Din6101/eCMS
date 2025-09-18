@@ -250,4 +250,127 @@ def update_trainer_schedule(%Schedule{} = schedule, attrs) do
   update_schedule(schedule, attrs)
 end
 
+
+  alias ECMS.Training.Result
+
+
+  def list_results_for_student(user_id) do
+    ECMS.Repo.all(
+      from r in ECMS.Training.Result,
+        where: r.user_id == ^user_id,
+        preload: [:course]
+    )
+  end
+
+
+  @doc """
+  Returns the list of results.
+
+  ## Examples
+
+      iex> list_results()
+      [%Result{}, ...]
+
+  """
+  def list_results do
+    Repo.all(Result) |> Repo.preload([:user, :course])
+  end
+
+  @doc """
+  Gets a single result.
+
+  Raises `Ecto.NoResultsError` if the Result does not exist.
+
+  ## Examples
+
+      iex> get_result!(123)
+      %Result{}
+
+      iex> get_result!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_result!(id) do
+    Repo.get!(Result, id) |> Repo.preload([:user, :course])
+  end
+
+
+  @doc """
+  Creates a result.
+
+  ## Examples
+
+      iex> create_result(%{field: value})
+      {:ok, %Result{}}
+
+      iex> create_result(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_result(attrs \\ %{}) do
+    %Result{}
+    |> Result.changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, result} ->
+        {:ok, Repo.preload(result, [:user, :course])}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Updates a result.
+
+  ## Examples
+
+      iex> update_result(result, %{field: new_value})
+      {:ok, %Result{}}
+
+      iex> update_result(result, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_result(%Result{} = result, attrs) do
+    result
+    |> Result.changeset(attrs)
+    |> Repo.update()
+    |> case do
+      {:ok, result} ->
+        {:ok, Repo.preload(result, [:user, :course])}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Deletes a result.
+
+  ## Examples
+
+      iex> delete_result(result)
+      {:ok, %Result{}}
+
+      iex> delete_result(result)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_result(%Result{} = result) do
+    Repo.delete(result)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking result changes.
+
+  ## Examples
+
+      iex> change_result(result)
+      %Ecto.Changeset{data: %Result{}}
+
+  """
+  def change_result(%Result{} = result, attrs \\ %{}) do
+    Result.changeset(result, attrs)
+  end
 end
