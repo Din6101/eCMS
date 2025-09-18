@@ -1,0 +1,33 @@
+<div class="mb-6">
+  <h1 class="text-3xl font-bold">📊 My Results</h1>
+  <p class="text-gray-600">View your course results below.</p>
+</div>
+
+<%= if Enum.empty?(@results) do %>
+  <div class="text-gray-500 italic">No results available yet. Please check back later.</div>
+<% else %>
+<main class="flex-1 flex justify-center items-start p-6 w-full">
+<div class="w-full px-6 py-8">
+  <table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Course</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Final Score</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Status</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Certification</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <%= for result <- @results do %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2"><%= result.course && result.course.title || "N/A" %></td>
+          <td class="px-4 py-2"><%= result.final_score %>%</td>
+          <td class="px-4 py-2"><%= String.capitalize(result.status) %></td>
+          <td class="px-4 py-2"><%= String.capitalize(result.certification) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+  </main>
+<% end %>

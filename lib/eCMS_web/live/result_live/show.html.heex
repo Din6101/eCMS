@@ -1,0 +1,28 @@
+<.header>
+  Result {@result.id}
+  <:subtitle>This is a result record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/trainer/results/#{@result}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit result</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Final score">{@result.final_score}</:item>
+  <:item title="Status">{@result.status}</:item>
+  <:item title="Certification">{@result.certification}</:item>
+</.list>
+
+<.back navigate={~p"/trainer/results"}>Back to results</.back>
+
+<.modal :if={@live_action == :edit} id="result-modal" show on_cancel={JS.patch(~p"/trainer/results/#{@result}")}>
+  <.live_component
+    module={ECMSWeb.ResultLive.FormComponent}
+    id={@result.id}
+    title={@page_title}
+    action={@live_action}
+    result={@result}
+    patch={~p"/trainer/results/#{@result}"}
+  />
+</.modal>
