@@ -84,4 +84,19 @@ defmodule ECMS.TrainingFixtures do
 
     result
   end
+
+  @doc """
+  Generate a certification.
+  """
+  def certification_fixture(attrs \\ %{}) do
+    {:ok, certification} =
+      attrs
+      |> Enum.into(%{
+        certificate_url: "some certificate_url",
+        issued_at: ~U[2025-09-18 00:48:00Z]
+      })
+      |> ECMS.Training.create_certification()
+
+    certification
+  end
 end

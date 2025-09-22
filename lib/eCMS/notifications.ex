@@ -6,6 +6,15 @@ defmodule ECMS.Notifications do
   alias ECMS.Courses.CourseApplication
 
 
+  def list_latest_notifications(limit \\ 3) do
+    Repo.all(
+      from n in StudentNotifications,
+        order_by: [desc: n.inserted_at],
+        limit: ^limit,
+        preload: [:course_application, :course, :student]
+    )
+  end
+
   def create_notification(attrs) do
     %StudentNotifications{}
     |> StudentNotifications.changeset(attrs)
@@ -215,4 +224,5 @@ def send_notification(course_app_id, message) when is_integer(course_app_id) do
  {admin_notif, student_notif}
   end)
 end
+
 end

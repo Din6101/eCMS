@@ -28,8 +28,9 @@ defmodule ECMSWeb.DashboardStudent do
     <div class="min-h-screen w-full bg-[#06A295] text-black p-6 font-sans">
       <h1 class="text-3xl font-bold mb-6 text-white">Trainee Dashboard</h1>
       <p class="text-xl font-bold mb-6 text-white">
-        Welcome, trainee. Here are your dashboard overviews.
+        Welcome, <%= @current_user && @current_user.full_name || "trainee" %>. Here are your dashboard overviews.
       </p>
+
 
       <div class="flex gap-x-6">
         <!-- Left: Enrollments + Notifications -->

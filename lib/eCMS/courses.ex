@@ -55,6 +55,20 @@ def list_applications(params \\ %{}) do
 
 end
 
+def get_application_stats do
+  from(a in CourseApplication,
+    where: a.inserted_at >= ago(7, "day"),
+    group_by: fragment("TO_CHAR(inserted_at, 'Dy')"),
+    select: %{
+      day: fragment("TO_CHAR(inserted_at, 'Dy')"),
+      count: count(a.id)
+    },
+    order_by: fragment("MIN(inserted_at)")
+  )
+  |> Repo.all()
+end
+
+
 # Get one application
 def get_application!(id) do
   Repo.get!(CourseApplication, id) |> Repo.preload([:user, :course])
