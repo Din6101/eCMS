@@ -98,17 +98,8 @@ if config_env() == :prod do
   # Check `Plug.SSL` for all available options in `force_ssl`.
 
   # ## Configuring the mailer
-  # Use SMTP (e.g., Gmail) in production. Provide credentials via env vars.
-  config :ecms, ECMS.Mailer,
-  adapter: Swoosh.Adapters.SMTP,
-  relay: "smtp.gmail.com",
-  username: System.get_env("SMTP_USERNAME"),   # your Gmail address
-  password: System.get_env("SMTP_PASSWORD"),   # app password (NOT Gmail normal password)
-  port: 587,
-  ssl: false,
-  tls: :always,
-  auth: :always
-
+  # Use Local adapter for development and testing
+  config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
 
   # Swoosh requires an API client when using non-SMTP adapters, but set it for safety
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
