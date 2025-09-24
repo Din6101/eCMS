@@ -221,48 +221,6 @@ def send_notification(course_app_id, message) when is_integer(course_app_id) do
       })
       |> Repo.insert()
 
-    # Hantar email async
-    Task.start(fn ->
-      email =
-        Swoosh.Email.new()
-        |> Swoosh.Email.to(course_app.user.email)
-        |> Swoosh.Email.from({"eCMS Team", System.get_env("SMTP_USERNAME") || "noreply@ecms.com"})
-        |> Swoosh.Email.subject("Course Application Update")
-        |> Swoosh.Email.text_body("""
-        Hello #{course_app.user.full_name},
-
-        #{message}
-
-        Course: #{course_app.course.title}
-        Course ID: #{course_app.course.course_id}
-
-        Regards,
-        eCMS Team
-        """)
-        |> Swoosh.Email.html_body("""
-        <p>Hello <b>#{course_app.user.full_name}</b>,</p>
-        <p>#{message}</p>
-        <p>
-          <b>Course:</b> #{course_app.course.title}<br>
-          <b>Course ID:</b> #{course_app.course.course_id}
-        </p>
-        <p>Regards,<br><b>eCMS Team</b></p>
-        """)
-
-      try do
-        case ECMS.Mailer.deliver(email) do
-          {:ok, _response} ->
-            IO.puts("✅ Email sent to #{course_app.user.email}")
-
-          {:error, reason} ->
-            IO.inspect(reason, label: "❌ Email send failed")
-        end
-      rescue
-        e ->
-          IO.inspect(e, label: "❌ Exception while sending email")
-      end
-    end)
-
     {admin_notif, student_notif}
   end)
 end
