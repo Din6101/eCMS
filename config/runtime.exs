@@ -113,7 +113,5 @@ if config_env() == :prod do
   # Swoosh requires an API client when using non-SMTP adapters, but set it for safety
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
 
-  # Configure Goth for Gmail OAuth2 authentication
-  config :goth,
-    json: "config/gmail_client_secret.json" |> File.read!()
+
 end

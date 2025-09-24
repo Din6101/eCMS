@@ -81,23 +81,5 @@ config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
-# Configure mailer for development - using Local adapter for easy testing
+# Configure mailer for development
 config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
-
-# Alternative: Gmail SMTP configuration (uncomment to use Gmail SMTP)
-# config :eCMS, ECMS.Mailer,
-#   adapter: Swoosh.Adapters.SMTP,
-#   relay: "smtp.gmail.com",
-#   username: "myecms2025@gmail.com",
-#   password: "your-gmail-app-password-here",
-#   port: 587,
-#   ssl: false,
-#   tls: :always,
-#   auth: :always,
-#   retries: 3,
-#   socket_options: [
-#     verify: :verify_none
-#   ]
-
-# Configure API client for SMTP
-config :swoosh, :api_client, Swoosh.ApiClient.Finch

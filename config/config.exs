@@ -32,21 +32,6 @@ config :eCMS, ECMSWeb.Endpoint,
 # Note: This will be overridden by dev.exs for development SMTP
 config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
 
-# Gmail SMTP Configuration
-config :eCMS, ECMS.Mailer,
-  adapter: Swoosh.Adapters.SMTP,
-  relay: "smtp.gmail.com",
-  username: "myecms2025@gmail.com",
-  password: "your-gmail-app-password-here",
-  ssl: false,
-  tls: :always,
-  auth: :always,
-  port: 587,
-  retries: 2,
-  no_mx_lookups: false,
-  socket_options: [
-    verify: :verify_none
-  ]
 
 # Configure esbuild (the version is required)
 config :esbuild,
