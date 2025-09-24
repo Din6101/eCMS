@@ -35,3 +35,8 @@ eCMS-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore sensitive configuration files
+config/gmail_client_secret.json
+config/*_secret.json
+config/*_credentials.json
+

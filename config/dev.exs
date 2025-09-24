@@ -89,7 +89,7 @@ config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
 #   adapter: Swoosh.Adapters.SMTP,
 #   relay: "smtp.gmail.com",
 #   username: "myecms2025@gmail.com",
-#   password: "gryyilxufwpkmrbk",
+#   password: "your-gmail-app-password-here",
 #   port: 587,
 #   ssl: false,
 #   tls: :always,
