@@ -11,7 +11,11 @@ defmodule ECMS.Courses do
   # Student applies to a course
   def apply_course(user, course_id) do
     %CourseApplication{}
+
     |> CourseApplication.changeset(%{user_id: user.id, course_id: course_id})
+
+    |> CourseApplication.changeset(%{user_id: user.id, course_id: course_id, status: :pending})
+
     |> Repo.insert()
   end
 
@@ -25,13 +29,16 @@ def list_applications(params \\ %{}) do
       join: u in assoc(a, :user),
       preload: [course: c, user: u]
 
+
   # Search by student name or course title
+
   query =
     case Map.get(params, "search") do
       nil -> query
       "" -> query
       search ->
         from [a, c, u] in query,
+
           where: ilike(u.full_name, ^"%#{search}%") or ilike(c.title, ^"%#{search}%")
     end
 
@@ -47,6 +54,20 @@ def list_applications(params \\ %{}) do
 
   # Default sorting by date (newest first)
   query = from [a, c, u] in query, order_by: [desc: a.inserted_at]
+
+
+          where: ilike(c.title, ^"%#{search}%") or ilike(u.full_name, ^"%#{search}%")
+    end
+
+  query =
+    case Map.get(params, "sort") do
+      "title_asc" -> from [a, c, u] in query, order_by: [asc: c.title]
+      "title_desc" -> from [a, c, u] in query, order_by: [desc: c.title]
+      "id_asc" -> from a in query, order_by: [asc: a.id]
+      "id_desc" -> from a in query, order_by: [desc: a.id]
+      _ -> query
+    end
+
 
   # Pagination
   page_number =
@@ -127,6 +148,7 @@ def get_application_stats do
 end
 
 
+
 # Get one application
 def get_application!(id) do
   Repo.get!(CourseApplication, id) |> Repo.preload([:user, :course])
@@ -135,14 +157,22 @@ end
 # Approve an application
 def approve_application(%CourseApplication{} = app) do
   app
+
   |> CourseApplication.status_changeset(%{status: :approved, approval: :approved})
+
+  |> CourseApplication.changeset(%{status: :approved})
+
   |> Repo.update()
 end
 
 # Reject an application
 def reject_application(%CourseApplication{} = app) do
   app
+
   |> CourseApplication.status_changeset(%{status: :rejected, approval: :unapproved})
+
+  |> CourseApplication.changeset(%{status: :rejected})
+
   |> Repo.update()
 end
 
@@ -155,6 +185,7 @@ end
 def delete_application(%CourseApplication{} = app) do
   Repo.delete(app)
 end
+
 
   # Approve all applications matching optional filters (defaults to pending)
   def approve_all_applications(params \\ %{}) do
@@ -187,6 +218,7 @@ end
 
     Repo.update_all(query, set: [status: :approved, approval: :approved])
   end
+
 
 
   def generate_course_id do
@@ -334,6 +366,7 @@ end
     Course.changeset(course, attrs)
   end
 
+
   # Quota helpers (fixed 20 per course)
   def count_approved_applications_for_course(course_id) do
     import Ecto.Query
@@ -371,4 +404,5 @@ end
     |> Enum.take(limit)
     |> Enum.map(fn {c, _} -> c end)
   end
+
 end

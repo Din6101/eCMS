@@ -18,11 +18,14 @@ defmodule ECMSWeb.LiveEventLive.FormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+
         class= "text-black"
+
       >
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:live]} type="checkbox" label="Live" />
         <.input field={@form[:presenter]} type="text" label="Presenter" />
+
 
         <div class="space-y-4 border-t pt-4 mt-4">
           <h3 class="text-lg font-medium text-gray-900">Video Link (Optional)</h3>
@@ -59,6 +62,7 @@ defmodule ECMSWeb.LiveEventLive.FormComponent do
             </ul>
           </div>
         </div>
+
 
         <:actions>
           <.button phx-disable-with="Saving...">Save Live event</.button>

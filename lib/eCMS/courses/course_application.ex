@@ -19,6 +19,7 @@ defmodule ECMS.Courses.CourseApplication do
   def changeset(application, attrs) do
     application
     |> cast(attrs, [:course_id, :user_id, :status, :approval, :notification])
+
     |> validate_required([:course_id, :user_id])
     |> put_change(:status, :pending)
     |> put_change(:approval, :unapproved)
@@ -30,5 +31,9 @@ defmodule ECMS.Courses.CourseApplication do
     application
     |> cast(attrs, [:status, :approval, :notification])
     |> validate_required([:status])
+
+    |> validate_required([:course_id, :user_id, :status, :approval, :notification])
+    |> unique_constraint([:course_id, :user_id, :status, :approval, :notification])
+
   end
 end

@@ -6,8 +6,12 @@ defmodule ECMS.Training do
   import Ecto.Query, warn: false
   alias ECMS.Repo
 
+
   alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification, Feedback}
   alias ECMS.Accounts.User
+
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities}
+
 
 
   # --------------------
@@ -561,5 +565,6 @@ end
       _ -> "N/A"
     end
   end
+
 
 end

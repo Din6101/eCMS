@@ -10,6 +10,7 @@
     <nav class="flex-1 px-4 py-6 space-y-3">
       <.link navigate={~p"/admin/dashboard_admin"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
 
+
       <!-- Event & Activity toggle -->
       <div
         class="flex items-center justify-between py-2 px-3 cursor-pointer hover:bg-[#05897D] rounded"
@@ -73,6 +74,43 @@
       <.link navigate={~p"/admin/admin_feedback"} class="block px-3 py-2 rounded hover:bg-tealLight">Feedback</.link>
     </nav>
 
+
+  
+  <div
+    class="flex items-center justify-between py-2 px-3 cursor-pointer hover:bg-[#05897D] rounded"
+    phx-click={JS.toggle(to: "#course-submenu") |> JS.toggle_class("rotate-90", to: "#chev-course")}
+  >
+    <span>Course</span>
+    <!-- Arrow -->
+    <span id="chev-course" class="text-white transform transition-transform duration-200">
+      ▶
+    </span>
+  </div>
+
+  <!-- Submenu -->
+  <ul id="course-submenu" class="ml-6 mt-1 hidden space-y-1">
+    <li>
+      <.link navigate={~p"/admin/courses"} class="block py-1 px-2 hover:bg-tealLight">
+        Add Course
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/admin/course_application"} class="block py-1 px-2 hover:bg-tealLight">
+         Course Applications
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/admin/schedules"} class="block py-1 px-2 hover:bg-tealLight">
+        Course Schedule
+      </.link>
+    </li>
+  </ul>
+
+      <.link navigate={~p"/admin/notifications"} class="block px-3 py-2 rounded hover:bg-tealLight">Notifications</.link>
+      <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Results</.link>
+      <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Certifications</.link>
+    </nav>
+
     <!-- User Profile Section -->
     <div class="border-t border-gray-700 px-4 py-4 relative">
       <!-- Avatar + Name -->
@@ -83,11 +121,20 @@
         class="flex items-center gap-3 w-full p-2 rounded hover:bg-tealLight transition"
       >
         <!-- Avatar -->
+
         <img 
           src={~p"/images/clipart153139-12-349.png"} 
           alt="User avatar" 
           class="w-6 h-6 rounded-full object-cover"
         />
+
+          <!-- Always show default avatar -->
+          <img 
+          src={~p"/images/clipart153139-12-349.png"} 
+          alt="User avatar" 
+          class="w-6 h-6 rounded-full object-cover"
+          />
+
 
         <!-- Name -->
         <div class="flex-1 text-left">
@@ -112,9 +159,11 @@
         id="user-dropdown"
         class="absolute bottom-14 left-4 w-50 bg-[#04675F] border border-gray-600 rounded shadow-lg hidden"
       >
+
         <.link navigate={~p"/users/profile"} class="block px-4 py-2 hover:bg-tealLight">
           👤 Profile
         </.link>
+
         <.link navigate={~p"/users/settings"} class="block px-4 py-2 hover:bg-tealLight">
           ⚙️ Settings
         </.link>
