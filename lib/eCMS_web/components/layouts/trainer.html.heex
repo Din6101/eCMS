@@ -1,0 +1,77 @@
+<div class="min-h-screen flex bg-[#06A295] text-white">
+  <!-- Sidebar -->
+  <aside class="w-40 bg-[#04675F] flex flex-col">
+    <div class="px-6 py-6 text-2xl font-bold border-b border-gray-700">
+      <img src={~p"/images/logo-cms-5-29.png"}
+           alt="e-CMS"
+           class="w-[150px] h-[100px] rounded-full p-2 mx-auto mb-4 object-contain" />
+    </div>
+
+    <nav class="flex-1 px-4 py-6 space-y-3">
+      <.link navigate={~p"/trainer/dashboard_trainer"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
+      <.link navigate={~p"/trainer/trainer_schedule"} class="block px-3 py-2 rounded hover:bg-tealLight">Schedule</.link>
+      <.link navigate={~p"/trainer/enrollments"} class="block px-3 py-2 rounded hover:bg-tealLight">Enrollments</.link>
+      <.link navigate={~p"/trainer/results"} class="block px-3 py-2 rounded hover:bg-tealLight">Results</.link>
+      <.link navigate={~p"/trainer/feedback"} class="block px-3 py-2 rounded hover:bg-tealLight">Feedback</.link>
+    </nav>
+    <!-- User Profile Section -->
+    <div class="border-t border-gray-700 px-4 py-4 relative">
+      <!-- Avatar + Name -->
+      <button
+        id="user-menu-button"
+        type="button"
+        phx-click={JS.toggle(to: "#user-dropdown")}
+        class="flex items-center gap-3 w-full p-2 rounded hover:bg-tealLight transition"
+      >
+        <!-- Avatar -->
+          <!-- Always show default avatar -->
+          <img 
+          src={~p"/images/clipart153139-12-349.png"}
+          alt="User avatar" 
+          class="w-6 h-6 rounded-full object-cover"
+          />
+
+        <!-- Name -->
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm">
+            <%= if assigns[:current_user] do %>
+              <%= assigns[:current_user].full_name %>
+            <% else %>
+              Admin
+            <% end %>
+          </p>
+          <p class="text-xs text-gray-400">Trainer</p>
+        </div>
+
+        <!-- Dropdown Icon -->
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <!-- Dropdown content -->
+      <div
+        id="user-dropdown"
+        class="absolute bottom-14 left-4 w-50 bg-[#04675F] border border-gray-600 rounded shadow-lg hidden"
+      >
+        <.link navigate={~p"/users/profile"} class="block px-4 py-2 hover:bg-tealLight">
+          👤 Profile
+        </.link>
+        <.link navigate={~p"/users/settings"} class="block px-4 py-2 hover:bg-tealLight">
+          ⚙️ Settings
+        </.link>
+        <.link href={~p"/users/log_out"} method="delete" class="block px-4 py-2 hover:bg-red-600">
+          🚪 Log out
+        </.link>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Page content -->
+    <main class="flex-1 p-6 overflow-y-auto pb-20">
+      <%= @inner_content %>
+    </main>
+  </div>
+</div>

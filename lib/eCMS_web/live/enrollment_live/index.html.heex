@@ -1,0 +1,72 @@
+<div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">📝 Enrollment</h1>
+      <.link
+        patch={~p"/trainer/enrollments/new"}
+        class="bg-white text-[#06A295] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        + New Enrollment
+      </.link>
+</div>
+
+<main class="flex-1 flex justify-center items-start p-6 w-full">
+  <div class="w-full px-6 py-8">
+    <table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-2 text-left">Student</th>
+          <th class="px-4 py-2 text-left">Course</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Progress</th>
+          <th class="px-4 py-2 text-left">Milestone</th>
+          <th class="px-4 py-2 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="enrollments" phx-update="stream" class="divide-y divide-gray-200">
+        <tr
+          :for={{id, enrollment} <- @streams.enrollments}
+          id={id}
+          phx-click={JS.navigate(~p"/trainer/enrollments/#{enrollment}")}
+          class="cursor-pointer hover:bg-gray-50"
+        >
+          <td class="px-4 py-2"><%= enrollment.user.full_name %></td>
+          <td class="px-4 py-2"><%= enrollment.course.title %></td>
+          <td class="px-4 py-2"><%= enrollment.status %></td>
+          <td class="px-4 py-2"><%= enrollment.progress %></td>
+          <td class="px-4 py-2"><%= for item <- String.split(enrollment.milestone || "", ",") do %>
+              <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+              <%= item %>
+              </span>
+              <% end %></td>
+          <td class="px-4 py-2 whitespace-nowrap">
+  <div class="sr-only">
+    <.link navigate={~p"/trainer/enrollments/#{enrollment}"}>Show</.link>
+  </div>
+  <.link patch={~p"/trainer/enrollments/#{enrollment}/edit"} class="underline text-blue-600 hover:text-blue-800">
+    Edit
+  </.link>
+  <.link
+    phx-click={JS.push("delete", value: %{id: enrollment.id}) |> hide("##{id}")}
+    data-confirm="Are you sure?"
+    class="underline text-red-600 hover:text-red-800"
+  >
+    Delete
+  </.link>
+</td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<.modal :if={@live_action in [:new, :edit]} id="enrollment-modal" show on_cancel={JS.patch(~p"/trainer/enrollments")}>
+  <.live_component
+    module={ECMSWeb.EnrollmentLive.FormComponent}
+    id={@enrollment.id || :new}
+    title={@page_title}
+    action={@live_action}
+    enrollment={@enrollment}
+    current_user={@current_user}
+    patch={~p"/trainer/enrollments"}
+  />
+</.modal>

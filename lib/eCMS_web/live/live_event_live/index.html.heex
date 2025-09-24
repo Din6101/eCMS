@@ -1,0 +1,43 @@
+<.header>
+  Listing Live events
+  <:actions>
+    <.link patch={~p"/admin/live_events/new"}>
+      <.button>New Live event</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="live_events"
+  rows={@streams.live_events}
+  row_click={fn {_id, live_event} -> JS.navigate(~p"/admin/live_events/#{live_event}") end}
+>
+  <:col :let={{_id, live_event}} label="Title">{live_event.title}</:col>
+  <:col :let={{_id, live_event}} label="Live">{live_event.live}</:col>
+  <:col :let={{_id, live_event}} label="Presenter">{live_event.presenter}</:col>
+  <:action :let={{_id, live_event}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/live_events/#{live_event}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/live_events/#{live_event}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, live_event}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: live_event.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="live_event-modal" show on_cancel={JS.patch(~p"/admin/live_events")}>
+  <.live_component
+    module={ECMSWeb.LiveEventLive.FormComponent}
+    id={@live_event.id || :new}
+    title={@page_title}
+    action={@live_action}
+    live_event={@live_event}
+    patch={~p"/admin/live_events"}
+  />
+</.modal>

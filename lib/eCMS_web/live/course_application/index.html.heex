@@ -1,0 +1,131 @@
+<div class="p-6">
+  <h2 class="text-2xl font-bold mb-4">Student Applications</h2>
+
+  <!-- Filters and Search -->
+  <div class="flex justify-start items-center px-8 py-4 gap-4">
+    <!-- Status Filter -->
+    <form phx-change="filter_status" class="flex gap-2 items-center">
+      <select
+        name="status"
+        class="px-4 py-2 rounded border border-gray-300 text-black"
+      >
+        <option value="approved" selected={@status == "approved"}>Approved</option>
+        <option value="pending" selected={@status == "pending"}>Pending</option>
+      </select>
+    </form>
+
+    <!-- Search form -->
+    <form phx-submit="search" class="flex gap-2 items-center">
+      <input
+        type="text"
+        name="search"
+        placeholder="Search by student name or course title..."
+        value={@search}
+        class="px-3 text-black py-2 rounded border border-gray-300 w-80"
+      />
+      <button type="submit" class="px-4 py-2 bg-white text-black rounded shadow">
+        🔍 Search
+      </button>
+    </form>
+
+    <!-- Approve All button -->
+    <button
+      type="button"
+      phx-click="approve_all"
+      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded shadow"
+      data-confirm="Approve all matching applications?"
+    >
+      ✅ Approve All
+    </button>
+  </div>
+
+  <!-- Applications Table -->
+  <main class="flex-1 flex justify-center items-start p-6 w-full">
+    <div class="w-full px-6 py-8">
+      <table class="min-w-full text-sm text-left text-gray-700 bg-white shadow rounded">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Course ID</th>
+            <th class="px-4 py-2">Title</th>
+            <th class="px-4 py-2">Applied At</th>
+            <th class="px-4 py-2">Approved/Pending</th>
+            <th class="px-4 py-2">Approval</th>
+            <th class="px-4 py-2">Notification</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for app <- @applications.entries do %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2"><%= app.user.full_name %></td>
+              <td class="px-4 py-2"><%= app.course.course_id %></td>
+              <td class="px-4 py-2"><%= app.course.title %></td>
+              <td class="px-4 py-2"><%= Calendar.strftime(app.inserted_at, "%d-%m-%Y") %></td>
+              <td class="px-4 py-2">
+                <span class={if app.status == :approved, do: "text-green-600", else: "text-red-600"}>
+                  <%= String.capitalize(to_string(app.status)) %>
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <%= if app.status == :pending do %>
+                  <button type="button" phx-click="approve" phx-value-id={app.id}
+                    class="px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600">✅ Approve</button>
+                  <button type="button" phx-click="reject" phx-value-id={app.id}
+                    class="px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600">❌ Reject</button>
+                <% end %>
+              </td>
+              <td class="px-4 py-2">
+                <%= case notification_status(app) do %>
+                  <% :unsent -> %>
+                    <button
+                      phx-click="send_notification"
+                      phx-value-course_app_id={app.id}
+                      class="px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      📤 Send
+                    </button>
+                      <% :sent -> %>
+                        <span class="px-2 py-1 rounded bg-green-500 text-white">
+                          ✅ Sent
+                        </span>
+                      <% end %>
+              </td>
+              <td class="px-4 py-2">
+                <a href="#" phx-click="delete_application"
+                   phx-value-id={app.id}
+                   data-confirm="Are you sure?"
+                   class="text-red-500 underline">Delete</a>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-4">
+        <button
+          :if={@applications.page_number > 1}
+          phx-click="paginate"
+          phx-value-page={@applications.page_number - 1}
+          class="px-3 py-1 bg-white text-black rounded shadow"
+        >
+          ◀ Prev
+        </button>
+
+        <span class="text-white">
+          Page <%= @applications.page_number %> of <%= @applications.total_pages %>
+        </span>
+
+        <button
+          :if={@applications.page_number < @applications.total_pages}
+          phx-click="paginate"
+          phx-value-page={@applications.page_number + 1}
+          class="px-3 py-1 bg-white text-black rounded shadow"
+        >
+          Next ▶
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

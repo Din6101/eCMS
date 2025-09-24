@@ -1,0 +1,129 @@
+<div class="min-h-screen flex flex-col bg-gradient-to-r from-tealDark via-tealDark to-tealDark" style="overflow: hidden; scrollbar-width: none;">
+  <!-- Main content container -->
+  <div class="flex-1 flex flex-col max-w-screen-xl mx-auto px-6 pt-10">
+    <!-- Logo -->
+    <img src={~p"/images/logo-cms-5-29.png"}
+         alt="e-CMS"
+         class="w-[150px] h-[100px] rounded-full p-2 mx-auto mb-4 object-contain" />
+
+    <!-- Title -->
+    <h1 class="text-center text-[45px] font-black leading-tight tracking-wide text-black mt-2">
+      COURSE MANAGEMENT SYSTEM
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-center mt-2 font-['Lilita_One'] text-[40px] font-black text-white">
+      "SYSTEMATIC TRAINING, CENTERED ASSESSMENT"
+    </p>
+
+    <!-- Role cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-9 mt-9 justify-items-center">
+      <!-- User Card -->
+      <div class="flex flex-col items-center">
+        <div class="text-black text-lg tracking-wide uppercase text-center font-black mb-2">
+          USER APPLY COURSES
+        </div>
+        <div
+          class="relative rounded-[18px] h-[200px] w-[340px] flex items-center justify-center shadow-md border-[3px] border-[#5fd6cf] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_20px_6px_rgba(95,214,207,0.6)]"
+          data-check="user-check">
+          <img src={~p"/images/man-reading-a-book-25.png"} alt="User" class="max-h-[120px] w-auto role-img" />
+          <img src={~p"/images/checkmark.jpg"} alt="Checked" id="user-check"
+               class="absolute right-[-6px] top-1/2 -translate-y-1/2 w-7 h-7 hidden badge-check" />
+        </div>
+
+            <!-- Registration link -->
+            <div class="w-full text-right mt-3 pr-2">
+              <p class="signup-line text-lg text-white">
+                For new user
+                <.link navigate={~p"/users/register"} 
+                class="text-lg font-semibold text-yellow-400 underline hover:text-yellow-300">
+                Sign up
+                </.link>
+                for an account now.
+              </p>
+            </div>
+      </div>
+
+      <!-- Admin Card -->
+      <div class="flex flex-col items-center">
+        <div class="text-black text-lg tracking-wide uppercase text-center font-black mb-2">
+          ADMIN MANAGE DATA
+        </div>
+        <div
+          class="relative rounded-[18px] h-[200px] w-[340px] flex items-center justify-center shadow-md border-[3px] border-[#5fd6cf] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_20px_6px_rgba(95,214,207,0.6)]"
+          data-check="admin-check">
+          <img src={~p"/images/administrator-26.png"} alt="Admin" class="max-h-[120px] w-auto role-img" />
+          <img src={~p"/images/checkmark.jpg"} alt="Checked" id="admin-check"
+               class="absolute right-[-6px] top-1/2 -translate-y-1/2 w-7 h-7 hidden badge-check" />
+        </div>
+      </div>
+
+      <!-- Trainer Card -->
+      <div class="flex flex-col items-center">
+        <div class="text-black text-lg tracking-wide uppercase text-center font-black mb-2">
+          TRAINER EVALUATE &amp; MANAGE
+        </div>
+        <div
+          class="relative rounded-[18px] h-[200px] w-[340px] flex items-center justify-center shadow-md border-[3px] border-[#5fd6cf] cursor-pointer transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-[0_0_20px_6px_rgba(95,214,207,0.6)]"
+          data-check="trainer-check">
+          <img src={~p"/images/personal-trainer-24.png"} alt="Trainer" class="max-h-[120px] w-auto role-img" />
+          <img src={~p"/images/checkmark.jpg"} alt="Checked" id="trainer-check"
+               class="absolute right-[-6px] top-1/2 -translate-y-1/2 w-7 h-7 hidden badge-check" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Login button -->
+    <div class="mt-10 flex items-center justify-center gap-4">
+      <img src={~p"/images/password-27.png"} alt="Lock" class="w-[42px] h-[42px]" />
+      <a href={~p"/users/log_in"} class="bg-[#5fd6cf] hover:bg-[#04675F] text-black px-6 py-3 rounded shadow-lg font-semibold login-btn">
+        LOGIN
+      </a>
+    </div>
+
+    <!-- Help -->
+    <div class="mt-4 text-center text-white font-semibold tracking-wide">
+      ☎️ NEED HELP? CALL SYSTEM ADMIN.
+    </div>
+  </div>
+
+ 
+</div>
+
+<!-- JS for role selection with grow & highlight -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let selectedRole = null;
+
+  document.querySelectorAll('[data-check]').forEach(card => {
+    card.addEventListener('click', function() {
+      // Reset all
+      document.querySelectorAll('[data-check]').forEach(c => {
+        c.classList.remove('scale-115', 'shadow-[0_0_25px_8px_rgba(95,214,207,0.8)]');
+      });
+      document.querySelectorAll('.badge-check').forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.role-img').forEach(img => img.classList.remove('max-h-[200px]'));
+
+      // Highlight selected
+      const checkId = card.getAttribute('data-check');
+      document.getElementById(checkId).classList.remove('hidden');
+      card.classList.add('scale-115', 'shadow-[0_0_25px_8px_rgba(95,214,207,0.8)]');
+      card.querySelector('.role-img').classList.add('max-h-[200px]');
+
+      selectedRole = checkId.replace('-check', '');
+    });
+  });
+
+  const loginBtn = document.querySelector('.login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (!selectedRole) {
+        alert('Please select your role before logging in.');
+        return;
+      }
+      window.location.href = '/users/log_in?role=' + encodeURIComponent(selectedRole);
+    });
+  }
+});
+</script>
