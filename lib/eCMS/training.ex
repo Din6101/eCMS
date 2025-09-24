@@ -270,7 +270,8 @@ defmodule ECMS.Training do
     |> Repo.one()
     |> case do
       nil -> 0
-      value -> trunc(value)
+      %Decimal{} = dec -> dec |> Decimal.to_float() |> trunc()
+      value when is_number(value) -> trunc(value)
     end
   end
 

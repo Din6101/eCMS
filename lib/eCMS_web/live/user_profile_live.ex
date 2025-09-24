@@ -21,7 +21,7 @@ defmodule ECMSWeb.UserProfileLive do
               <% _ -> %>
                 <.link navigate={~p"/student/dashboard_student"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
             <% end %>
-            <.link navigate={~p"/users/profile"} class="block px-3 py-2 rounded bg-teal-600">Profile</.link>
+            <.link navigate={~p"/users/settings"} class="block px-3 py-2 rounded bg-teal-600">Profile</.link>
             <.link navigate={~p"/users/settings"} class="block px-3 py-2 rounded hover:bg-tealLight">Settings</.link>
           </nav>
         </aside>

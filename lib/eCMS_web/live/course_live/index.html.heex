@@ -69,9 +69,8 @@
             <td class="px-4 py-2"><%= course.title %></td>
             <td class="px-4 py-2 whitespace-nowrap">
               <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                <%= ECMS.Courses.count_approved_applications_for_course(course.id) %>/20
+                <%= course.qouta || "-" %>
               </span>
-              <span class="ml-1 text-[10px] text-gray-500">(approved only)</span>
             </td>
             <td class="px-4 py-2 whitespace-normal break-words"><%= course.description %></td>
             <td class="px-4 py-2 whitespace-nowrap">
