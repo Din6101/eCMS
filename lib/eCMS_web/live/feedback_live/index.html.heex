@@ -1,0 +1,48 @@
+<.header>
+  Feedback from Trainers
+  <:actions>
+    <.link patch={~p"/trainer/feedback/new"}>
+      <.button>New Feedback</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="feedback"
+  rows={@streams.feedback_collection}
+  row_click={fn {_id, feedback} -> JS.navigate(~p"/trainer/feedback/#{feedback}") end}
+>
+  <:col :let={{_id, feedback}} label="Student"><%= feedback.student.full_name %></:col>
+  <:col :let={{_id, feedback}} label="Course"><%= feedback.course.title %></:col>
+  <:col :let={{_id, feedback}} label="Feedback"><%= String.slice(feedback.feedback, 0, 100) %>...</:col>
+  <:col :let={{_id, feedback}} label="Need Support">
+    <span class={["px-2 py-1 text-xs rounded-full", if(feedback.need_support, do: "bg-red-100 text-red-800", else: "bg-green-100 text-green-800")]}>
+      <%= if feedback.need_support, do: "Yes", else: "No" %>
+    </span>
+  </:col>
+  <:action :let={{_id, feedback}}>
+    <div class="sr-only">
+      <.link navigate={~p"/trainer/feedback/#{feedback}"}>Show</.link>
+    </div>
+    <.link patch={~p"/trainer/feedback/#{feedback.id}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, feedback}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: feedback.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="feedback-modal" show on_cancel={JS.patch(~p"/trainer/feedback")}>
+  <.live_component
+    module={ECMSWeb.FeedbackLive.FormComponent}
+    id={@feedback.id || :new}
+    title={@page_title}
+    action={@live_action}
+    feedback={@feedback}
+    patch={~p"/trainer/feedback"}
+  />
+</.modal>

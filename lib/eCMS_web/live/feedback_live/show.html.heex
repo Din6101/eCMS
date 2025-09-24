@@ -1,0 +1,34 @@
+<.header>
+  Feedback <%= @feedback.id %>
+  <:subtitle>This is a feedback record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/trainer/feedback/#{@feedback}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit feedback</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Student"><%= @feedback.student.full_name %></:item>
+  <:item title="Course"><%= @feedback.course.title %></:item>
+  <:item title="Feedback"><%= @feedback.feedback %></:item>
+  <:item title="Remarks"><%= @feedback.remarks %></:item>
+  <:item title="Need Support">
+    <span class={["px-2 py-1 text-xs rounded-full", if(@feedback.need_support, do: "bg-red-100 text-red-800", else: "bg-green-100 text-green-800")]}>
+      <%= if @feedback.need_support, do: "Yes", else: "No" %>
+    </span>
+  </:item>
+</.list>
+
+<.back navigate={~p"/trainer/feedback"}>Back to feedback</.back>
+
+<.modal :if={@live_action == :edit} id="feedback-modal" show on_cancel={JS.patch(~p"/trainer/feedback/#{@feedback}")}>
+  <.live_component
+    module={ECMSWeb.FeedbackLive.FormComponent}
+    id={@feedback.id}
+    title={@page_title}
+    action={@live_action}
+    feedback={@feedback}
+    patch={~p"/trainer/feedback/#{@feedback}"}
+  />
+</.modal>

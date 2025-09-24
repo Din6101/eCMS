@@ -1,0 +1,96 @@
+<div class="min-h-screen bg-[#06A295] text-white p-6 font-sans">
+  <.header class="text-white">
+    <span class="text-2xl mr-2">📝</span>
+    Feedback from Trainers
+    <:subtitle>Review feedback submitted by trainers about students</:subtitle>
+  </.header>
+
+  <div class="mt-6 bg-white text-black rounded shadow">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remarks</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Need Support</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <%= for feedback <- @feedback_list do %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900"><%= feedback.student.full_name %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500"><%= feedback.student.email %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900"><%= feedback.course.title %></div>
+                <div class="text-sm text-gray-500"><%= feedback.course.course_id %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-900 max-w-xs">
+                  <%= if String.length(feedback.feedback) > 100 do %>
+                    <%= String.slice(feedback.feedback, 0, 100) %>...
+                    <button class="text-blue-600 hover:text-blue-900 ml-1" onclick={"document.getElementById('feedback-#{feedback.id}').classList.toggle('hidden')"}>
+                      Read more
+                    </button>
+                    <div id={"feedback-#{feedback.id}"} class="hidden mt-2 p-2 bg-gray-50 rounded text-xs">
+                      <%= feedback.feedback %>
+                    </div>
+                  <% else %>
+                    <%= feedback.feedback %>
+                  <% end %>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-900 max-w-xs">
+                  <%= if feedback.remarks do %>
+                    <%= if String.length(feedback.remarks) > 50 do %>
+                      <%= String.slice(feedback.remarks, 0, 50) %>...
+                      <button class="text-blue-600 hover:text-blue-900 ml-1" onclick={"document.getElementById('remarks-#{feedback.id}').classList.toggle('hidden')"}>
+                        Read more
+                      </button>
+                      <div id={"remarks-#{feedback.id}"} class="hidden mt-2 p-2 bg-gray-50 rounded text-xs">
+                        <%= feedback.remarks %>
+                      </div>
+                    <% else %>
+                      <%= feedback.remarks %>
+                    <% end %>
+                  <% else %>
+                    <span class="text-gray-400">No remarks</span>
+                  <% end %>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class={["px-2 inline-flex text-xs leading-5 font-semibold rounded-full", 
+                             if(feedback.need_support, do: "bg-red-100 text-red-800", else: "bg-green-100 text-green-800")]}>
+                  <%= if feedback.need_support do %>
+                    ⚠️ Yes
+                  <% else %>
+                    ✅ No
+                  <% end %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= Calendar.strftime(feedback.inserted_at, "%d-%m-%Y %H:%M") %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      
+      <%= if Enum.empty?(@feedback_list) do %>
+        <div class="text-center py-12">
+          <div class="text-gray-400 text-6xl mb-4">📝</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No feedback yet</h3>
+          <p class="text-gray-500">Feedback from trainers will appear here when submitted.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

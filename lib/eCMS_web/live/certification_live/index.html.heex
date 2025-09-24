@@ -1,0 +1,57 @@
+<.header>
+  Listing Certifications
+  <:actions>
+    <.link patch={~p"/admin/certifications/new"}>
+      <.button>New Certification</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="certifications"
+  rows={@streams.certifications}
+  row_click={fn {_id, certification} -> JS.navigate(~p"/admin/certifications/#{certification}") end}
+>
+  <:col :let={{_id, certification}} label="Student Name">
+    <%= certification.user && certification.user.full_name || "N/A" %>
+  </:col>
+
+  <:col :let={{_id, certification}} label="Course Title">
+    <%= certification.course && certification.course.title || "N/A" %>
+  </:col>
+
+  <:col :let={{_id, certification}} label="Certificate URL">
+    <%= certification.certificate_url %>
+  </:col>
+
+  <:col :let={{_id, certification}} label="Issued At">
+    <%= certification.issued_at %>
+  </:col>
+
+  <:action :let={{_id, certification}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/certifications/#{certification}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/certifications/#{certification}/edit"}>Edit</.link>
+  </:action>
+
+  <:action :let={{id, certification}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: certification.id}) |> hide("##{id}")} 
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="certification-modal" show on_cancel={JS.patch(~p"/admin/certifications")}>
+  <.live_component
+    module={ECMSWeb.CertificationLive.FormComponent}
+    id={@certification.id || :new}
+    title={@page_title}
+    action={@live_action}
+    certification={@certification}
+    patch={~p"/admin/certifications"}
+  />
+</.modal>
