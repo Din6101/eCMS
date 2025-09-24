@@ -22,6 +22,8 @@ defmodule ECMSWeb.Router do
     pipe_through [:browser]
 
     get "/", PageController, :home
+    get "/landing", PageController, :landing
+    get "/home", PageController, :classic_home
 
 
   end
@@ -72,6 +74,7 @@ defmodule ECMSWeb.Router do
       live "/certifications/:id/show/edit", CertificationLive.Show, :edit
 
       live "/admin_result", AdminResult.Index, :index
+      live "/admin_feedback", AdminFeedback.Index, :index
     end
   end
 
@@ -97,6 +100,13 @@ defmodule ECMSWeb.Router do
 
       live "/results/:id", ResultLive.Show, :show
       live "/results/:id/show/edit", ResultLive.Show, :edit
+
+      live "/feedback", FeedbackLive.Index, :index
+      live "/feedback/new", FeedbackLive.Index, :new
+      live "/feedback/:id/edit", FeedbackLive.Index, :edit
+
+      live "/feedback/:id", FeedbackLive.Show, :show
+      live "/feedback/:id/show/edit", FeedbackLive.Show, :edit
 
     end
   end
@@ -163,6 +173,7 @@ defmodule ECMSWeb.Router do
       on_mount: [{ECMSWeb.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+      live "/users/profile", UserProfileLive, :index
     end
   end
 

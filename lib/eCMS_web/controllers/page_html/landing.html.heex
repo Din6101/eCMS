@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Slideshow fade effect */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+    .slide.active {
+      opacity: 1;
+    }
+
+    /* Matrix raining effect */
+    .matrix-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -10;
+      display: flex;
+      gap: 1.25rem;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    .matrix {
+      font-family: monospace;
+      font-size: 22px;
+      line-height: 26px;
+      color: rgba(16, 185, 129, 0.75); /* brighter emerald */
+      text-shadow: 0 0 6px rgba(16, 185, 129, 0.9), 0 0 12px rgba(16, 185, 129, 0.7);
+      white-space: nowrap;
+      animation: matrixAnim 18s linear infinite;
+      font-weight: 600;
+      flex: 1 1 140px; /* grow to fill width, keep reasonable column width */
+    }
+    @keyframes matrixAnim {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100%); }
+    }
+
+    /* AI brain pulse */
+    .pulse {
+      animation: pulseAnim 6s ease-in-out infinite;
+    }
+    @keyframes pulseAnim {
+      0%, 100% { transform: scale(1); opacity: 0.15; }
+      50% { transform: scale(1.05); opacity: 0.25; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-teal-800 to-teal-600 text-white font-sans">
+
+  <!-- Full-screen Matrix background overlay -->
+  <div class="matrix-overlay">
+    <div class="matrix" style="animation-duration: 18s; animation-delay: -2s;">1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101</div>
+    <div class="matrix" style="animation-duration: 21s; animation-delay: -7s;">0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010</div>
+    <div class="matrix" style="animation-duration: 19s; animation-delay: -4s;">1010101010101010010101010101010101010101010101010<br>1010101001010101010101010101010101010101010101010<br>1010010101010101010101010101010101010101010101010<br>1010101010101010101010101010010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>1010101010101010010101010101010101010101010101010<br>1010101001010101010101010101010101010101010101010<br>1010010101010101010101010101010101010101010101010<br>1010101010101010101010101010010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010</div>
+    <div class="matrix" style="animation-duration: 24s; animation-delay: -10s;">0101010101010110101010101010101010101010101010101<br>0101010101010101010101010101101010101010101010101<br>0101101010101010101010101010101010101010101010101<br>0101010101010101010101010101010101010101101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>0101010101010110101010101010101010101010101010101<br>0101010101010101010101010101101010101010101010101<br>0101101010101010101010101010101010101010101010101<br>0101010101010101010101010101010101010101101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101</div>
+    <div class="matrix" style="animation-duration: 20s; animation-delay: -6s;">1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101</div>
+    <div class="matrix" style="animation-duration: 23s; animation-delay: -12s;">0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010</div>
+    <div class="matrix" style="animation-duration: 17s; animation-delay: -8s;">1010101010101010010101010101010101010101010101010<br>1010101001010101010101010101010101010101010101010<br>1010010101010101010101010101010101010101010101010<br>1010101010101010101010101010010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>1010101010101010010101010101010101010101010101010<br>1010101001010101010101010101010101010101010101010<br>1010010101010101010101010101010101010101010101010<br>1010101010101010101010101010010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010</div>
+    <div class="matrix" style="animation-duration: 26s; animation-delay: -15s;">0101010101010110101010101010101010101010101010101<br>0101010101010101010101010101101010101010101010101<br>0101101010101010101010101010101010101010101010101<br>0101010101010101010101010101010101010101101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101<br>0101010101010110101010101010101010101010101010101<br>0101010101010101010101010101101010101010101010101<br>0101101010101010101010101010101010101010101010101<br>0101010101010101010101010101010101010101101010101<br>1010010101010101010101010101010101010101010101010<br>0101101010101010101010101010101010101010101010101</div>
+  </div>
+
+  <!-- Hero with background slideshow -->
+  <section class="relative h-[500px] flex items-center justify-center text-center overflow-hidden">
+    <!-- Slideshow images -->
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&h=500&fit=crop" alt="Modern Classroom" class="slide active">
+    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1600&h=500&fit=crop" alt="IT Training" class="slide">
+    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1600&h=500&fit=crop" alt="Science Lab" class="slide">
+    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=1600&h=500&fit=crop" alt="Business Meeting" class="slide">
+    <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1600&h=500&fit=crop" alt="AI Technology" class="slide">
+
+    <!-- Overlay teal -->
+    <div class="absolute inset-0 bg-teal-900/70"></div>
+
+    <!-- Hero content -->
+    <div class="relative z-10 max-w-2xl px-6">
+      <h1 class="text-5xl sm:text-6xl font-bold mb-4 text-white">Welcome to the Course Management System</h1>
+      <p class="text-xl mb-6 text-white">Manage registrations, courses, and participants easily and efficiently.</p>
+      <a href={~p"/home"} class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold text-lg shadow-lg hover:bg-yellow-300 transition">
+        Register / Login
+      </a>
+    </div>
+  </section>
+
+  <!-- Statistics -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 px-6 py-12 text-center">
+    <div class="relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-0.5">
+      <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+      <div class="text-5xl mb-2">📚</div>
+      <h2 class="text-5xl font-extrabold tracking-tight"><%= @total_courses %></h2>
+      <p class="mt-1 text-emerald-100 text-lg">Available Courses</p>
+    </div>
+    <div class="relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-0.5">
+      <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+      <div class="text-5xl mb-2">👥</div>
+      <h2 class="text-5xl font-extrabold tracking-tight"><%= @total_participants %></h2>
+      <p class="mt-1 text-fuchsia-100 text-lg">Registered Participants</p>
+    </div>
+    <div class="relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-0.5">
+      <div class="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+      <div class="text-5xl mb-2">⭐</div>
+      <h2 class="text-5xl font-extrabold tracking-tight"><%= @satisfaction_rate %>%</h2>
+      <p class="mt-1 text-amber-100 text-lg">User Satisfaction</p>
+    </div>
+  </section>
+
+  <!-- Courses with matrix effect background -->
+  <section class="relative px-6 py-12 text-center overflow-hidden">
+    <!-- Matrix raining code background -->
+    <!-- Global matrix overlay is applied site-wide; removed section-scoped background -->
+
+    <h2 class="text-2xl font-bold relative z-10">Popular Course Categories</h2>
+    <div class="grid gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+      <%= for {category_name, category_data} <- @course_categories do %>
+        <div class="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-0.5">
+          <div class="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10 blur-xl"></div>
+          <img src={category_data.image} alt={category_name} class="rounded-lg mb-3 w-full h-40 object-cover ring-2 ring-white/20 shadow-lg">
+          <h3 class="font-bold text-white text-xl"><%= category_name %></h3>
+          <p class="text-base text-white font-bold"><%= category_data.description %></p>
+          <p class="text-sm text-emerald-100 mt-2 font-bold"><%= category_data.count %> courses available</p>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- Testimonials with AI brain illustration -->
+  <section class="relative px-6 py-12 text-center overflow-hidden">
+    <!-- AI brain glowing image - hidden to avoid text interference -->
+    <!-- <img src="https://images.unsplash.com/photo-1581090700227-4c4f50b2d6de?w=600&h=400&fit=crop"
+         alt="AI Brain Technology"
+         class="absolute right-10 bottom-0 w-80 opacity-5 pointer-events-none pulse" /> -->
+
+    <h2 class="text-3xl font-extrabold relative z-10">What Users Say</h2>
+    <div class="grid gap-6 mt-8 sm:grid-cols-2 relative z-10">
+      <div class="relative overflow-hidden rounded-xl p-6 text-left bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-0.5">
+        <div class="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10 blur-xl"></div>
+        <div class="text-4xl mb-3">“</div>
+        <p class="italic text-white text-lg leading-relaxed">This system makes daily course management so much easier. Very user-friendly!</p>
+        <strong class="block mt-3 text-emerald-100">– Ali, Training Supervisor</strong>
+      </div>
+      <div class="relative overflow-hidden rounded-xl p-6 text-left bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl hover:shadow-2xl transition-transform hover:-translate-y-0.5">
+        <div class="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10 blur-xl"></div>
+        <div class="text-4xl mb-3">“</div>
+        <p class="italic text-white text-lg leading-relaxed">Courses are more organized and clear. Participants can access learning materials easily.</p>
+        <strong class="block mt-3 text-emerald-100">– Aisyah, Instructor</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer with circuit board background -->
+  <footer class="relative bg-black/70 text-center py-6 text-sm overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20 opacity-30"></div>
+    <p class="relative z-10">© 2025 Course Management System. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Slideshow Script -->
+  <script>
+    let slides = document.querySelectorAll('.slide');
+    let index = 0;
+    setInterval(() => {
+      slides[index].classList.remove('active');
+      index = (index + 1) % slides.length;
+      slides[index].classList.add('active');
+    }, 5000);
+  </script>
+</body>
+</html>
+
+

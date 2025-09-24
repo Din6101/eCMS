@@ -6,7 +6,7 @@ defmodule ECMS.Training do
   import Ecto.Query, warn: false
   alias ECMS.Repo
 
-  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification}
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification, Feedback}
   alias ECMS.Accounts.User
 
 
@@ -485,12 +485,81 @@ end
   end
 
   def list_students do
-    from(u in User, where: u.role == "student") # assuming students are stored in users table
+    from(u in User, where: u.role == "student", select: {u.full_name, u.id})
     |> Repo.all()
   end
 
   def list_courses do
     Repo.all(ECMS.Courses.Course)
+  end
+
+  # --------------------
+  # Feedback
+  # --------------------
+
+  def list_feedback do
+    Repo.all(Feedback)
+    |> Repo.preload([:student, :course])
+  end
+
+  def get_feedback!(id) do
+    Repo.get!(Feedback, id)
+    |> Repo.preload([:student, :course])
+  end
+
+  def create_feedback(attrs \\ %{}) do
+    %Feedback{}
+    |> Feedback.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_feedback(%Feedback{} = feedback, attrs) do
+    feedback
+    |> Feedback.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_feedback(%Feedback{} = feedback), do: Repo.delete(feedback)
+
+  def change_feedback(%Feedback{} = feedback, attrs \\ %{}) do
+    Feedback.changeset(feedback, attrs)
+  end
+
+  # Count functions for profile stats
+  def count_students_by_trainer(_trainer_id) do
+    # Since Course schema doesn't have trainer_id, we'll return 0 for now
+    # This can be updated when trainer assignment is implemented
+    0
+  end
+
+  def count_feedback_by_trainer(_trainer_id) do
+    # Since Course schema doesn't have trainer_id, we'll return 0 for now
+    # This can be updated when trainer assignment is implemented
+    0
+  end
+
+  def count_enrollments_by_student(student_id) do
+    from(e in Enrollment, where: e.user_id == ^student_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_certifications_by_student(student_id) do
+    from(c in Certification, where: c.user_id == ^student_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def get_average_score_by_student(student_id) do
+    result = from(r in Result,
+      where: r.user_id == ^student_id,
+      select: avg(r.final_score)
+    )
+    |> Repo.one()
+
+    case result do
+      nil -> "N/A"
+      score when is_number(score) -> Float.round(score, 1)
+      _ -> "N/A"
+    end
   end
 
 end

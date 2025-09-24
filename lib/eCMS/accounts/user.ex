@@ -11,6 +11,12 @@ defmodule ECMS.Accounts.User do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
+    # Profile fields
+    field :phone, :string
+    field :date_of_birth, :date
+    field :address, :string
+    field :avatar_url, :string
+
     timestamps(type: :utc_datetime)
   end
 
@@ -159,5 +165,17 @@ end
     else
       add_error(changeset, :current_password, "is not valid")
     end
+  end
+
+  @doc """
+  A user changeset for updating profile information.
+  """
+  def profile_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:full_name, :phone, :date_of_birth, :address, :avatar_url])
+    |> validate_required([:full_name])
+    |> validate_length(:full_name, min: 2, max: 100)
+    |> validate_length(:phone, min: 10, max: 20)
+    |> validate_length(:address, max: 500)
   end
 end

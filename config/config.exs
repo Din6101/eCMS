@@ -29,7 +29,24 @@ config :eCMS, ECMSWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
+# Note: This will be overridden by dev.exs for development SMTP
 config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
+
+# Gmail SMTP Configuration
+config :eCMS, ECMS.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: "smtp.gmail.com",
+  username: "myecms2025@gmail.com",
+  password: "gryyilxufwpkmrbk",
+  ssl: false,
+  tls: :always,
+  auth: :always,
+  port: 587,
+  retries: 2,
+  no_mx_lookups: false,
+  socket_options: [
+    verify: :verify_none
+  ]
 
 # Configure esbuild (the version is required)
 config :esbuild,

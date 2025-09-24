@@ -70,6 +70,7 @@
       <.link navigate={~p"/admin/notifications"} class="block px-3 py-2 rounded hover:bg-tealLight">Notifications</.link>
       <.link navigate={~p"/admin/admin_result"} class="block px-3 py-2 rounded hover:bg-tealLight">Results</.link>
       <.link navigate={~p"/admin/certifications"} class="block px-3 py-2 rounded hover:bg-tealLight">Certifications</.link>
+      <.link navigate={~p"/admin/admin_feedback"} class="block px-3 py-2 rounded hover:bg-tealLight">Feedback</.link>
     </nav>
 
     <!-- User Profile Section -->
@@ -111,6 +112,9 @@
         id="user-dropdown"
         class="absolute bottom-14 left-4 w-50 bg-[#04675F] border border-gray-600 rounded shadow-lg hidden"
       >
+        <.link navigate={~p"/users/profile"} class="block px-4 py-2 hover:bg-tealLight">
+          👤 Profile
+        </.link>
         <.link navigate={~p"/users/settings"} class="block px-4 py-2 hover:bg-tealLight">
           ⚙️ Settings
         </.link>

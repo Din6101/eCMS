@@ -98,20 +98,22 @@ if config_env() == :prod do
   # Check `Plug.SSL` for all available options in `force_ssl`.
 
   # ## Configuring the mailer
-  #
-  # In production you need to configure the mailer to use a different adapter.
-  # Also, you may need to configure the Swoosh API client of your choice if you
-  # are not using SMTP. Here is an example of the configuration:
-  #
-  #     config :eCMS, ECMS.Mailer,
-  #       adapter: Swoosh.Adapters.Mailgun,
-  #       api_key: System.get_env("MAILGUN_API_KEY"),
-  #       domain: System.get_env("MAILGUN_DOMAIN")
-  #
-  # For this example you need include a HTTP client required by Swoosh API client.
-  # Swoosh supports Hackney and Finch out of the box:
-  #
-  #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
-  #
-  # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  # Use SMTP (e.g., Gmail) in production. Provide credentials via env vars.
+  config :ecms, ECMS.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: "smtp.gmail.com",
+  username: System.get_env("SMTP_USERNAME"),   # your Gmail address
+  password: System.get_env("SMTP_PASSWORD"),   # app password (NOT Gmail normal password)
+  port: 587,
+  ssl: false,
+  tls: :always,
+  auth: :always
+
+
+  # Swoosh requires an API client when using non-SMTP adapters, but set it for safety
+  config :swoosh, :api_client, Swoosh.ApiClient.Finch
+
+  # Configure Goth for Gmail OAuth2 authentication
+  config :goth,
+    json: "config/gmail_client_secret.json" |> File.read!()
 end

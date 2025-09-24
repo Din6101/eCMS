@@ -11,7 +11,7 @@ defmodule ECMS.Courses do
   # Student applies to a course
   def apply_course(user, course_id) do
     %CourseApplication{}
-    |> CourseApplication.changeset(%{user_id: user.id, course_id: course_id, status: :pending})
+    |> CourseApplication.changeset(%{user_id: user.id, course_id: course_id})
     |> Repo.insert()
   end
 
@@ -25,23 +25,28 @@ def list_applications(params \\ %{}) do
       join: u in assoc(a, :user),
       preload: [course: c, user: u]
 
+  # Search by student name or course title
   query =
     case Map.get(params, "search") do
       nil -> query
       "" -> query
       search ->
         from [a, c, u] in query,
-          where: ilike(c.title, ^"%#{search}%") or ilike(u.full_name, ^"%#{search}%")
+          where: ilike(u.full_name, ^"%#{search}%") or ilike(c.title, ^"%#{search}%")
     end
 
+  # Filter by status (approved/pending) - default to pending if no status specified
   query =
-    case Map.get(params, "sort") do
-      "title_asc" -> from [a, c, u] in query, order_by: [asc: c.title]
-      "title_desc" -> from [a, c, u] in query, order_by: [desc: c.title]
-      "id_asc" -> from a in query, order_by: [asc: a.id]
-      "id_desc" -> from a in query, order_by: [desc: a.id]
-      _ -> query
+    case Map.get(params, "status") do
+      nil -> from [a, c, u] in query, where: a.status == :pending
+      "" -> from [a, c, u] in query, where: a.status == :pending
+      "approved" -> from [a, c, u] in query, where: a.status == :approved
+      "pending" -> from [a, c, u] in query, where: a.status == :pending
+      _ -> from [a, c, u] in query, where: a.status == :pending
     end
+
+  # Default sorting by date (newest first)
+  query = from [a, c, u] in query, order_by: [desc: a.inserted_at]
 
   # Pagination
   page_number =
@@ -55,17 +60,70 @@ def list_applications(params \\ %{}) do
 
 end
 
-def get_application_stats do
+# List all applications without pagination (for student course view)
+def list_all_applications do
   from(a in CourseApplication,
-    where: a.inserted_at >= ago(7, "day"),
-    group_by: fragment("TO_CHAR(inserted_at, 'Dy')"),
-    select: %{
-      day: fragment("TO_CHAR(inserted_at, 'Dy')"),
-      count: count(a.id)
-    },
-    order_by: fragment("MIN(inserted_at)")
+    join: c in assoc(a, :course),
+    join: u in assoc(a, :user),
+    preload: [course: c, user: u]
   )
   |> Repo.all()
+end
+
+# Count functions for profile stats
+def count_courses do
+  Repo.aggregate(Course, :count, :id)
+end
+
+def count_applications do
+  Repo.aggregate(CourseApplication, :count, :id)
+end
+
+def count_courses_by_trainer(_trainer_id) do
+  # Since Course schema doesn't have trainer_id, we'll return 0 for now
+  # This can be updated when trainer assignment is implemented
+  0
+end
+
+def get_application_stats do
+  # Get current week starting from Monday
+  today = Date.utc_today()
+  days_from_monday = Date.day_of_week(today) - 1
+  monday = Date.add(today, -days_from_monday)
+
+  # Generate all 7 days of the current week (Monday to Sunday)
+  days = for i <- 0..6, do: Date.add(monday, i)
+
+  # Get actual application counts grouped by date
+  actual_stats = from(a in CourseApplication,
+    where: fragment("date(inserted_at)") >= ^monday and fragment("date(inserted_at)") <= ^Date.add(monday, 6),
+    group_by: fragment("date(inserted_at)"),
+    select: %{
+      date: fragment("date(inserted_at)"),
+      count: count(a.id)
+    }
+  )
+  |> Repo.all()
+  |> Map.new(fn stat -> {stat.date, stat.count} end)
+
+  # Create stats for all 7 days, filling in 0 for days with no applications
+  Enum.map(days, fn date ->
+    day_name = case Date.day_of_week(date) do
+      1 -> "Mon"
+      2 -> "Tue"
+      3 -> "Wed"
+      4 -> "Thu"
+      5 -> "Fri"
+      6 -> "Sat"
+      7 -> "Sun"
+    end
+
+    %{
+      day: day_name,
+      date: date,
+      count: Map.get(actual_stats, date, 0)
+    }
+  end)
 end
 
 
@@ -77,14 +135,14 @@ end
 # Approve an application
 def approve_application(%CourseApplication{} = app) do
   app
-  |> CourseApplication.changeset(%{status: :approved})
+  |> CourseApplication.status_changeset(%{status: :approved, approval: :approved})
   |> Repo.update()
 end
 
 # Reject an application
 def reject_application(%CourseApplication{} = app) do
   app
-  |> CourseApplication.changeset(%{status: :rejected})
+  |> CourseApplication.status_changeset(%{status: :rejected, approval: :unapproved})
   |> Repo.update()
 end
 
@@ -98,6 +156,37 @@ def delete_application(%CourseApplication{} = app) do
   Repo.delete(app)
 end
 
+  # Approve all applications matching optional filters (defaults to pending)
+  def approve_all_applications(params \\ %{}) do
+    import Ecto.Query
+
+    # Base query
+    query = from a in CourseApplication
+
+    # Optional search by student name or course title
+    query =
+      case Map.get(params, "search") do
+        nil -> query
+        "" -> query
+        search ->
+          from a in query,
+            join: c in assoc(a, :course),
+            join: u in assoc(a, :user),
+            where: ilike(u.full_name, ^"%#{search}%") or ilike(c.title, ^"%#{search}%")
+      end
+
+    # Filter by status; default to pending if not provided
+    query =
+      case Map.get(params, "status") do
+        nil -> from a in query, where: a.status == :pending
+        "" -> from a in query, where: a.status == :pending
+        "approved" -> from a in query, where: a.status == :approved
+        "pending" -> from a in query, where: a.status == :pending
+        _ -> from a in query, where: a.status == :pending
+      end
+
+    Repo.update_all(query, set: [status: :approved, approval: :approved])
+  end
 
 
   def generate_course_id do
@@ -243,5 +332,43 @@ end
   """
   def change_course(%Course{} = course, attrs \\ %{}) do
     Course.changeset(course, attrs)
+  end
+
+  # Quota helpers (fixed 20 per course)
+  def count_approved_applications_for_course(course_id) do
+    import Ecto.Query
+    from(a in CourseApplication,
+      where: a.course_id == ^course_id and a.status == :approved,
+      select: count(a.id)
+    )
+    |> Repo.one()
+  end
+
+  def course_full?(course_id, quota \\ 20) do
+    count_approved_applications_for_course(course_id) >= quota
+  end
+
+  # Suggest related courses by shared keywords in title/description
+  def suggest_related_courses(%ECMS.Courses.Course{} = course, limit \\ 3) do
+    candidates = list_all_courses()
+    text = String.downcase("#{course.title} #{course.description}")
+    keywords =
+      text
+      |> String.replace(~r/[^a-z0-9\s]/, "")
+      |> String.split(~r/\s+/, trim: true)
+      |> Enum.reject(&(&1 in ["the","and","of","to","in","for","with","a","an","on","by","is","it"]))
+      |> Enum.uniq()
+
+    candidates
+    |> Enum.reject(&(&1.id == course.id))
+    |> Enum.map(fn c ->
+      ctext = String.downcase("#{c.title} #{c.description}")
+      score = Enum.count(keywords, fn k -> String.contains?(ctext, k) end)
+      {c, score}
+    end)
+    |> Enum.filter(fn {_c, score} -> score > 0 end)
+    |> Enum.sort_by(fn {_c, score} -> -score end)
+    |> Enum.take(limit)
+    |> Enum.map(fn {c, _} -> c end)
   end
 end

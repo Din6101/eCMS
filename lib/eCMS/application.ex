@@ -18,7 +18,7 @@ defmodule ECMS.Application do
       # {ECMS.Worker, arg},
       # Start to serve requests, typically the last entry
       ECMSWeb.Endpoint
-    ]
+    ] ++ goth_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -32,5 +32,13 @@ defmodule ECMS.Application do
   def config_change(changed, _new, removed) do
     ECMSWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  # Helper function to conditionally start Goth
+  defp goth_children do
+    case Application.get_env(:goth, :json) do
+      nil -> []
+      json -> [{Goth, json}]
+    end
   end
 end

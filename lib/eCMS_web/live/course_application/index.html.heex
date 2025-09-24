@@ -1,34 +1,42 @@
 <div class="p-6">
   <h2 class="text-2xl font-bold mb-4">Student Applications</h2>
 
-  <!-- Search + Filter -->
-  <div class="flex justify-end items-center px-8 py-4">
+  <!-- Filters and Search -->
+  <div class="flex justify-start items-center px-8 py-4 gap-4">
+    <!-- Status Filter -->
+    <form phx-change="filter_status" class="flex gap-2 items-center">
+      <select
+        name="status"
+        class="px-4 py-2 rounded border border-gray-300 text-black"
+      >
+        <option value="approved" selected={@status == "approved"}>Approved</option>
+        <option value="pending" selected={@status == "pending"}>Pending</option>
+      </select>
+    </form>
+
     <!-- Search form -->
     <form phx-submit="search" class="flex gap-2 items-center">
       <input
         type="text"
         name="search"
-        placeholder="Search courses or students..."
+        placeholder="Search by student name or course title..."
         value={@search}
-        class="px-3 text-black py-2 rounded border border-gray-300 w-64"
+        class="px-3 text-black py-2 rounded border border-gray-300 w-80"
       />
       <button type="submit" class="px-4 py-2 bg-white text-black rounded shadow">
         🔍 Search
       </button>
     </form>
 
-    <!-- Sorting dropdown -->
-    <form phx-change="sort" class="ml-4">
-      <select
-        name="sort"
-        class="px-7 py-2 rounded border border-gray-300 text-black"
-      >
-        <option value="title_asc"  selected={@sort == "title_asc"}>Title ↑</option>
-        <option value="title_desc" selected={@sort == "title_desc"}>Title ↓</option>
-        <option value="id_asc"     selected={@sort == "id_asc"}>Course ID ↑</option>
-        <option value="id_desc"    selected={@sort == "id_desc"}>Course ID ↓</option>
-      </select>
-    </form>
+    <!-- Approve All button -->
+    <button
+      type="button"
+      phx-click="approve_all"
+      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded shadow"
+      data-confirm="Approve all matching applications?"
+    >
+      ✅ Approve All
+    </button>
   </div>
 
   <!-- Applications Table -->
@@ -41,7 +49,7 @@
             <th class="px-4 py-2">Course ID</th>
             <th class="px-4 py-2">Title</th>
             <th class="px-4 py-2">Applied At</th>
-            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Approved/Pending</th>
             <th class="px-4 py-2">Approval</th>
             <th class="px-4 py-2">Notification</th>
             <th class="px-4 py-2">Actions</th>

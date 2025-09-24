@@ -24,14 +24,14 @@ defmodule ECMSWeb.CertificationLive.FormComponent do
           type="select"
           field={@form[:user_id]}
           label="Student"
-          options={@students}
+          options={for s <- @students, do: {s.full_name, s.id}}
         />
 
         <.input
           type="select"
           field={@form[:course_id]}
           label="Course"
-          options={@courses}
+          options={for c <- @courses, do: {c.title, c.id}}
         />
 
         <div class="mb-4">
@@ -70,13 +70,8 @@ defmodule ECMSWeb.CertificationLive.FormComponent do
 
   @impl true
   def update(%{certification: certification} = assigns, socket) do
-    students =
-      Training.list_students()
-      |> Enum.map(&{&1.full_name, &1.id})
-
-    courses =
-      Training.list_courses()
-      |> Enum.map(&{&1.title, &1.id})
+    students = ECMS.Accounts.list_users_by_role("student")
+    courses = Training.list_courses()
 
     changeset = Training.change_certification(certification)
 

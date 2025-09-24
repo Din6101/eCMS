@@ -217,4 +217,29 @@ end
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  ## Profile management
+
+  @doc """
+  Returns a changeset for changing the user profile.
+  """
+  def change_user_profile(%User{} = user, attrs \\ %{}) do
+    User.profile_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the user profile.
+  """
+  def update_user_profile(%User{} = user, attrs) do
+    user
+    |> User.profile_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Counts total users.
+  """
+  def count_users do
+    Repo.aggregate(User, :count, :id)
+  end
 end

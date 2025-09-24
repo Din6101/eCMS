@@ -7,27 +7,44 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
     {:ok,
      socket
      |> assign(:courses, Courses.list_courses(%{"page" => "1"}))
-     |> assign(:applications, Courses.list_applications())
+     |> assign(:applications, Courses.list_all_applications())
      |> assign(:search, "")
-     |> assign(:sort, "id_desc")}
+     |> assign(:sort, "id_desc")
+     |> assign(:applying_course_id, nil)}
   end
 
   @impl true
   def handle_event("apply", %{"id" => id}, socket) do
     user = socket.assigns.current_user
+    course_id = String.to_integer(id)
 
-    case Courses.apply_course(user, String.to_integer(id)) do
+    # Set loading state
+    socket = assign(socket, :applying_course_id, course_id)
+
+    case Courses.apply_course(user, course_id) do
       {:ok, _app} ->
         {:noreply,
          socket
          |> put_flash(:info, "Applied successfully")
-         |> assign(:applications, Courses.list_applications())
-         |> clear_flash(:info)}
+         |> assign(:applications, Courses.list_all_applications())
+         |> assign(:applying_course_id, nil)}
 
       {:error, changeset} ->
+        error_message = case changeset.errors do
+          [{:course_id, {"You have already applied to this course", _}}] ->
+            "You have already applied to this course"
+          [{:user_id, {msg, _}}] ->
+            msg
+          [{:course_id, {msg, _}}] ->
+            msg
+          _ ->
+            "Application failed. Please try again."
+        end
+
         {:noreply,
          socket
-         |> put_flash(:error, "Could not apply: #{inspect(changeset.errors)}")}
+         |> put_flash(:error, error_message)
+         |> assign(:applying_course_id, nil)}
     end
   end
 
@@ -95,7 +112,7 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
         </div>
       <% end %>
       <!-- Search + Filter -->
-      <div class="flex justify-end items-center px-8 py-4">
+      <div class="flex justify-start items-center px-8 py-4">
       <form phx-submit="search" class="flex gap-2 items-center">
         <input
         type="text"
@@ -128,6 +145,7 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
             <tr>
               <th class="px-4 py-2 text-left">Course ID</th>
               <th class="px-4 py-2 text-left">Title</th>
+              <th class="px-4 py-2 text-left">Quota per course</th>
               <th class="px-4 py-2 text-left">Description</th>
               <th class="px-4 py-2 text-right">Action</th>
             </tr>
@@ -136,26 +154,53 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
             <tr :for={course <- @courses.entries}>
               <td class="px-4 py-2"><%= course.course_id %></td>
               <td class="px-4 py-2"><%= course.title %></td>
+              <td class="px-4 py-2">
+                <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  <%= ECMS.Courses.count_approved_applications_for_course(course.id) %>/20
+                </span>
+                <span class="ml-1 text-[10px] text-gray-500">(approved only)</span>
+              </td>
               <td class="px-4 py-2"><%= course.description %></td>
               <td class="px-4 py-2 text-right">
                 <%= case Enum.find(@applications, &(&1.course_id == course.id && &1.user_id == @current_user.id)) do %>
                 <% nil -> %>
-                  <button type="button" phx-click="apply" phx-value-id={course.id} class="px-3 py-1 bg-blue-500 text-white rounded">
-                    Apply
-                  </button>
+                  <%= if @applying_course_id == course.id do %>
+                    <button type="button" disabled class="px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed">
+                      Applying...
+                    </button>
+                  <% else %>
+                    <%= if ECMS.Courses.course_full?(course.id) do %>
+                      <div class="text-right">
+                        <span class="inline-block mb-2 text-sm text-red-600 font-semibold">Quota reached (20)</span>
+                        <div class="text-xs text-gray-600 mb-1">You may be interested in:</div>
+                        <div class="flex flex-wrap gap-2 justify-end">
+                          <%= for rel <- ECMS.Courses.suggest_related_courses(course) do %>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                              <%= rel.title %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% else %>
+                      <button type="button" phx-click="apply" phx-value-id={course.id} class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors">
+                        Apply
+                      </button>
+                    <% end %>
+                  <% end %>
                 <% app -> %>
-                  <span class={
+                  <span class={[
+                    "px-3 py-1 text-xs font-medium rounded-full",
                     case app.status do
-                    :approved -> "text-green-600"
-                    :pending -> "text-yellow-600"
-                    :rejected -> "text-red-600"
-                    _ -> "text-gray-600"
+                      :approved -> "bg-green-100 text-green-800"
+                      :pending -> "bg-yellow-100 text-yellow-800"
+                      :rejected -> "bg-red-100 text-red-800"
+                      _ -> "bg-gray-100 text-gray-800"
                     end
-                    }>
-                  (<%= String.capitalize(to_string(app.status)) %>)
+                  ]}>
+                    <%= String.capitalize(to_string(app.status)) %>
                   </span>
-              <% end %>
-            </td>
+                <% end %>
+              </td>
           </tr>
         </tbody>
       </table>
