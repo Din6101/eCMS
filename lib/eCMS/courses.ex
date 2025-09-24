@@ -103,6 +103,20 @@ end
     Repo.all(Course)
   end
 
+  # Simple counters used by dashboard
+  def count_courses do
+    Repo.aggregate(Course, :count, :id)
+  end
+
+  def count_applications do
+    Repo.aggregate(CourseApplication, :count, :id)
+  end
+
+  def count_courses_by_trainer(trainer_id) do
+    from(c in Course, where: c.trainer_id == ^trainer_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
 
   @doc """
   Returns the list of courses.

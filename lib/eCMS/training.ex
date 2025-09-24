@@ -6,7 +6,7 @@ defmodule ECMS.Training do
   import Ecto.Query, warn: false
   alias ECMS.Repo
 
-  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities}
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Feedback, Certification}
 
 
   # --------------------
@@ -91,6 +91,38 @@ defmodule ECMS.Training do
     |> Repo.insert()
   end
 
+  # --------------------
+  # Feedback
+  # --------------------
+
+  def list_feedback do
+    Repo.all(Feedback)
+    |> Repo.preload([:student, :course])
+  end
+
+  def get_feedback!(id) do
+    Repo.get!(Feedback, id)
+    |> Repo.preload([:student, :course])
+  end
+
+  def create_feedback(attrs \\ %{}) do
+    %Feedback{}
+    |> Feedback.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_feedback(%Feedback{} = feedback, attrs) do
+    feedback
+    |> Feedback.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_feedback(%Feedback{} = feedback), do: Repo.delete(feedback)
+
+  def change_feedback(%Feedback{} = feedback, attrs \\ %{}) do
+    Feedback.changeset(feedback, attrs)
+  end
+
   def update_activities(%Activities{} = activities, attrs) do
     activities
     |> Activities.changeset(attrs)
@@ -119,6 +151,127 @@ defmodule ECMS.Training do
       preload: [:course]
     )
     |> Repo.all()
+  end
+
+  # --------------------
+  # Results
+  # --------------------
+
+  def list_results do
+    Repo.all(Result)
+    |> Repo.preload([:user, :course])
+  end
+
+  def list_results_for_student(student_id) do
+    from(r in Result, where: r.user_id == ^student_id, preload: [:course])
+    |> Repo.all()
+  end
+
+  def get_result!(id) do
+    Repo.get!(Result, id)
+    |> Repo.preload([:user, :course])
+  end
+
+  def create_result(attrs \\ %{}) do
+    %Result{}
+    |> Result.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_result(%Result{} = result, attrs) do
+    result
+    |> Result.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_result(%Result{} = result), do: Repo.delete(result)
+
+  def change_result(%Result{} = result, attrs \\ %{}) do
+    Result.changeset(result, attrs)
+  end
+
+  # --------------------
+  # Certifications
+  # --------------------
+
+  def list_certifications do
+    Repo.all(Certification)
+    |> Repo.preload([:user, :course])
+  end
+
+  def list_certifications_for_student(student_id) do
+    from(c in Certification, where: c.user_id == ^student_id, preload: [:course])
+    |> Repo.all()
+  end
+
+  def get_certification!(id) do
+    Repo.get!(Certification, id)
+    |> Repo.preload([:user, :course])
+  end
+
+  def create_certification(attrs \\ %{}) do
+    %Certification{}
+    |> Certification.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_certification(%Certification{} = certification, attrs) do
+    certification
+    |> Certification.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_certification(%Certification{} = certification), do: Repo.delete(certification)
+
+  def change_certification(%Certification{} = certification, attrs \\ %{}) do
+    Certification.changeset(certification, attrs)
+  end
+
+  # --------------------
+  # Simple cross-context helpers
+  # --------------------
+
+  def list_students do
+    ECMS.Accounts.list_students()
+  end
+
+  # Small proxy to courses for convenience in LiveViews/components
+  def list_courses do
+    ECMS.Courses.list_all_courses()
+  end
+
+  # Trainer/student stats helpers
+  def count_students_by_trainer(trainer_id) do
+    from(s in Schedule, where: s.trainer_id == ^trainer_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_feedback_by_trainer(trainer_id) do
+    from(f in Feedback,
+      join: s in Schedule,
+      on: f.course_id == s.course_id,
+      where: s.trainer_id == ^trainer_id
+    )
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_enrollments_by_student(student_id) do
+    from(e in Enrollment, where: e.user_id == ^student_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_certifications_by_student(student_id) do
+    from(c in Certification, where: c.user_id == ^student_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def get_average_score_by_student(student_id) do
+    from(r in Result, where: r.user_id == ^student_id, select: avg(r.final_score))
+    |> Repo.one()
+    |> case do
+      nil -> 0
+      value -> trunc(value)
+    end
   end
 
 

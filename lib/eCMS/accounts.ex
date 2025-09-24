@@ -35,6 +35,22 @@ end
     |> Repo.all()
   end
 
+  # Dashboard helpers
+  def count_users do
+    Repo.aggregate(User, :count, :id)
+  end
+
+  # User profile helpers used by LiveView
+  def change_user_profile(%User{} = user, attrs \\ %{}) do
+    User.email_changeset(user, attrs)
+  end
+
+  def update_user_profile(%User{} = user, attrs) do
+    user
+    |> User.email_changeset(attrs)
+    |> Repo.update()
+  end
+
   # ---------------------------------------------------------
   # DATABASE GETTERS
   # ---------------------------------------------------------
