@@ -236,4 +236,118 @@ defmodule ECMS.TrainingTest do
       assert %Ecto.Changeset{} = Training.change_activities(activities)
     end
   end
+
+  describe "results" do
+    alias ECMS.Training.Result
+
+    import ECMS.TrainingFixtures
+
+    @invalid_attrs %{status: nil, final_score: nil, certification: nil}
+
+    test "list_results/0 returns all results" do
+      result = result_fixture()
+      assert Training.list_results() == [result]
+    end
+
+    test "get_result!/1 returns the result with given id" do
+      result = result_fixture()
+      assert Training.get_result!(result.id) == result
+    end
+
+    test "create_result/1 with valid data creates a result" do
+      valid_attrs = %{status: "some status", final_score: 42, certification: "some certification"}
+
+      assert {:ok, %Result{} = result} = Training.create_result(valid_attrs)
+      assert result.status == "some status"
+      assert result.final_score == 42
+      assert result.certification == "some certification"
+    end
+
+    test "create_result/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Training.create_result(@invalid_attrs)
+    end
+
+    test "update_result/2 with valid data updates the result" do
+      result = result_fixture()
+      update_attrs = %{status: "some updated status", final_score: 43, certification: "some updated certification"}
+
+      assert {:ok, %Result{} = result} = Training.update_result(result, update_attrs)
+      assert result.status == "some updated status"
+      assert result.final_score == 43
+      assert result.certification == "some updated certification"
+    end
+
+    test "update_result/2 with invalid data returns error changeset" do
+      result = result_fixture()
+      assert {:error, %Ecto.Changeset{}} = Training.update_result(result, @invalid_attrs)
+      assert result == Training.get_result!(result.id)
+    end
+
+    test "delete_result/1 deletes the result" do
+      result = result_fixture()
+      assert {:ok, %Result{}} = Training.delete_result(result)
+      assert_raise Ecto.NoResultsError, fn -> Training.get_result!(result.id) end
+    end
+
+    test "change_result/1 returns a result changeset" do
+      result = result_fixture()
+      assert %Ecto.Changeset{} = Training.change_result(result)
+    end
+  end
+
+  describe "certifications" do
+    alias ECMS.Training.Certification
+
+    import ECMS.TrainingFixtures
+
+    @invalid_attrs %{certificate_url: nil, issued_at: nil}
+
+    test "list_certifications/0 returns all certifications" do
+      certification = certification_fixture()
+      assert Training.list_certifications() == [certification]
+    end
+
+    test "get_certification!/1 returns the certification with given id" do
+      certification = certification_fixture()
+      assert Training.get_certification!(certification.id) == certification
+    end
+
+    test "create_certification/1 with valid data creates a certification" do
+      valid_attrs = %{certificate_url: "some certificate_url", issued_at: ~U[2025-09-18 00:48:00Z]}
+
+      assert {:ok, %Certification{} = certification} = Training.create_certification(valid_attrs)
+      assert certification.certificate_url == "some certificate_url"
+      assert certification.issued_at == ~U[2025-09-18 00:48:00Z]
+    end
+
+    test "create_certification/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Training.create_certification(@invalid_attrs)
+    end
+
+    test "update_certification/2 with valid data updates the certification" do
+      certification = certification_fixture()
+      update_attrs = %{certificate_url: "some updated certificate_url", issued_at: ~U[2025-09-19 00:48:00Z]}
+
+      assert {:ok, %Certification{} = certification} = Training.update_certification(certification, update_attrs)
+      assert certification.certificate_url == "some updated certificate_url"
+      assert certification.issued_at == ~U[2025-09-19 00:48:00Z]
+    end
+
+    test "update_certification/2 with invalid data returns error changeset" do
+      certification = certification_fixture()
+      assert {:error, %Ecto.Changeset{}} = Training.update_certification(certification, @invalid_attrs)
+      assert certification == Training.get_certification!(certification.id)
+    end
+
+    test "delete_certification/1 deletes the certification" do
+      certification = certification_fixture()
+      assert {:ok, %Certification{}} = Training.delete_certification(certification)
+      assert_raise Ecto.NoResultsError, fn -> Training.get_certification!(certification.id) end
+    end
+
+    test "change_certification/1 returns a certification changeset" do
+      certification = certification_fixture()
+      assert %Ecto.Changeset{} = Training.change_certification(certification)
+    end
+  end
 end

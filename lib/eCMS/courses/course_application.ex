@@ -19,7 +19,16 @@ defmodule ECMS.Courses.CourseApplication do
   def changeset(application, attrs) do
     application
     |> cast(attrs, [:course_id, :user_id, :status, :approval, :notification])
-    |> validate_required([:course_id, :user_id, :status, :approval, :notification])
-    |> unique_constraint([:course_id, :user_id, :status, :approval, :notification])
+    |> validate_required([:course_id, :user_id])
+    |> put_change(:status, :pending)
+    |> put_change(:approval, :unapproved)
+    |> put_change(:notification, :unsent)
+    |> unique_constraint([:course_id, :user_id], message: "You have already applied to this course")
+  end
+
+  def status_changeset(application, attrs) do
+    application
+    |> cast(attrs, [:status, :approval, :notification])
+    |> validate_required([:status])
   end
 end

@@ -11,8 +11,8 @@
       <.link navigate={~p"/student/dashboard_student"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
       <.link navigate={~p"/student/course_live/student_course"} class="block px-3 py-2 rounded hover:bg-tealLight">Course</.link>
       <.link navigate={~p"/student/student_notifications"} class="block px-3 py-2 rounded hover:bg-tealLight">Notifications</.link>
-      <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Results</.link>
-      <.link navigate={~p"/"} class="block px-3 py-2 rounded hover:bg-tealLight">Certifications</.link>
+      <.link navigate={~p"/student/student_results"} class="block px-3 py-2 rounded hover:bg-tealLight">Results</.link>
+      <.link navigate={~p"/student/student_certification"} class="block px-3 py-2 rounded hover:bg-tealLight">Certifications</.link>
     </nav>
     <!-- User Profile Section -->
     <div class="border-t border-gray-700 px-4 py-4 relative">
@@ -54,6 +54,9 @@
         id="user-dropdown"
         class="absolute bottom-14 left-4 w-50 bg-[#04675F] border border-gray-600 rounded shadow-lg hidden"
       >
+        <.link navigate={~p"/users/profile"} class="block px-4 py-2 hover:bg-tealLight">
+          👤 Profile
+        </.link>
         <.link navigate={~p"/users/settings"} class="block px-4 py-2 hover:bg-tealLight">
           ⚙️ Settings
         </.link>

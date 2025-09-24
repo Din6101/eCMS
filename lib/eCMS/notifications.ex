@@ -6,6 +6,15 @@ defmodule ECMS.Notifications do
   alias ECMS.Courses.CourseApplication
 
 
+  def list_latest_notifications(limit \\ 3) do
+    Repo.all(
+      from n in StudentNotifications,
+        order_by: [desc: n.inserted_at],
+        limit: ^limit,
+        preload: [:course_application, :course, :student]
+    )
+  end
+
   def create_notification(attrs) do
     %StudentNotifications{}
     |> StudentNotifications.changeset(attrs)
@@ -183,36 +192,38 @@ end
 def send_notification(course_app_id, message) when is_binary(course_app_id) do
   send_notification(String.to_integer(course_app_id), message)
 end
+
 def send_notification(course_app_id, message) when is_integer(course_app_id) do
-  course_app = Repo.get!(CourseApplication, course_app_id) |> Repo.preload([:user, :course])
+  course_app =
+    Repo.get!(CourseApplication, course_app_id)
+    |> Repo.preload([:user, :course])
 
-  # 1. Insert ke admin_notifications
+  Repo.transaction(fn ->
+    {:ok, admin_notif} =
+      %AdminNotifications{}
+      |> AdminNotifications.changeset(%{
+        user_id: course_app.user_id,
+        course_id: course_app.course_id,
+        course_application_id: course_app.id,
+        message: message,
+        sent_at: NaiveDateTime.utc_now()
+      })
+      |> Repo.insert()
 
-    Repo.transaction(fn ->
-      {:ok, admin_notif} =
-    %AdminNotifications{}
-    |> AdminNotifications.changeset(%{
-      user_id: course_app.user_id,
-      course_id: course_app.course_id,
-      course_application_id: course_app.id,
-      message: message,
-      sent_at: NaiveDateTime.utc_now()
-    })
-    |> Repo.insert()
+    {:ok, student_notif} =
+      %StudentNotifications{}
+      |> StudentNotifications.changeset(%{
+        student_id: course_app.user_id,
+        course_application_id: course_app.id,
+        course_id: course_app.course_id,
+        admin_notification_id: admin_notif.id,
+        message: message
+      })
+      |> Repo.insert()
 
-  # 2. Insert ke student_notifications
-  {:ok, student_notif} =
-  %StudentNotifications{}
-  |> StudentNotifications.changeset(%{
-    student_id: course_app.user_id,
-    course_application_id: course_app.id,
-    course_id: course_app.course_id,
-    admin_notification_id: admin_notif.id,
-    message: message,
-  })
-  |> Repo.insert()
-
- {admin_notif, student_notif}
+    {admin_notif, student_notif}
   end)
 end
+
+
 end

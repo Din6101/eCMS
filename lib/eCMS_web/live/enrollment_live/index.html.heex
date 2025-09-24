@@ -1,11 +1,12 @@
-<.header>
-  Listing Enrollments
-  <:actions>
-    <.link patch={~p"/trainer/enrollments/new"}>
-      <.button>New Enrollment</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">📝 Enrollment</h1>
+      <.link
+        patch={~p"/trainer/enrollments/new"}
+        class="bg-white text-[#06A295] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        + New Enrollment
+      </.link>
+</div>
 
 <main class="flex-1 flex justify-center items-start p-6 w-full">
   <div class="w-full px-6 py-8">

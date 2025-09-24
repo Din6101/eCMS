@@ -5,18 +5,43 @@ defmodule ECMSWeb.UserSettingsLive do
 
   def render(assigns) do
     ~H"""
-    <.header class="text-center">
-      Account Settings
-      <:subtitle>Manage your account email address and password settings</:subtitle>
-    </.header>
+    <div class="min-h-screen bg-[#06A295]">
+      <div class="flex">
+        <!-- Sidebar Menu (role-aware) -->
+        <aside class="w-40 bg-[#04675F] text-white hidden md:flex md:flex-col">
+          <div class="px-6 py-6 border-b border-gray-700 text-center">
+            <img src={~p"/images/logo-cms-5-29.png"} alt="e-CMS" class="w-[120px] h-[80px] rounded p-2 mx-auto object-contain" />
+          </div>
+          <nav class="flex-1 px-4 py-6 space-y-3">
+            <%= case @current_user.role do %>
+              <% "admin" -> %>
+                <.link navigate={~p"/admin/dashboard_admin"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
+              <% "trainer" -> %>
+                <.link navigate={~p"/trainer/dashboard_trainer"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
+              <% _ -> %>
+                <.link navigate={~p"/student/dashboard_student"} class="block px-3 py-2 rounded hover:bg-tealLight">Dashboard</.link>
+            <% end %>
+            <.link navigate={~p"/users/profile"} class="block px-3 py-2 rounded hover:bg-tealLight">Profile</.link>
+            <.link navigate={~p"/users/settings"} class="block px-3 py-2 rounded bg-teal-600">Settings</.link>
+          </nav>
+        </aside>
 
-    <div class="space-y-12 divide-y">
-      <div>
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+          <div class="max-w-4xl mx-auto">
+            <div id="settings" class="text-center mb-8">
+              <h1 class="text-3xl font-bold text-white mb-2">Account Settings</h1>
+              <p class="text-white/90">Manage your account email address and password settings</p>
+            </div>
+
+            <div class="space-y-12">
+              <div class="bg-[#04675F] rounded-lg p-6">
         <.simple_form
           for={@email_form}
           id="email_form"
           phx-submit="update_email"
           phx-change="validate_email"
+          class= "bg-teal-600"
         >
           <.input field={@email_form[:email]} type="email" label="Email" required />
           <.input
@@ -33,7 +58,7 @@ defmodule ECMSWeb.UserSettingsLive do
           </:actions>
         </.simple_form>
       </div>
-      <div>
+              <div class="bg-[#04675F] rounded-lg p-6">
         <.simple_form
           for={@password_form}
           id="password_form"
@@ -68,6 +93,10 @@ defmodule ECMSWeb.UserSettingsLive do
             <.button phx-disable-with="Changing...">Change Password</.button>
           </:actions>
         </.simple_form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     """

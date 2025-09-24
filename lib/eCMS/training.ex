@@ -403,4 +403,7 @@ def update_trainer_schedule(%Schedule{} = schedule, attrs) do
   update_schedule(schedule, attrs)
 end
 
+
+
+
 end

@@ -18,10 +18,48 @@ defmodule ECMSWeb.LiveEventLive.FormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        class= "text-black"
       >
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:live]} type="checkbox" label="Live" />
         <.input field={@form[:presenter]} type="text" label="Presenter" />
+
+        <div class="space-y-4 border-t pt-4 mt-4">
+          <h3 class="text-lg font-medium text-gray-900">Video Link (Optional)</h3>
+          <p class="text-sm text-gray-600">Add a link to your live video from social media platforms</p>
+
+          <.input
+            field={@form[:platform]}
+            type="select"
+            label="Platform"
+            prompt="Choose a platform"
+            options={[
+              {"Facebook", "facebook"},
+              {"YouTube", "youtube"},
+              {"TikTok", "tiktok"},
+              {"Instagram", "instagram"}
+            ]}
+          />
+
+          <.input
+            field={@form[:video_url]}
+            type="url"
+            label="Video URL"
+            placeholder="https://www.facebook.com/username/videos/123456789/"
+          />
+          <p class="text-xs text-gray-500 mt-1">Paste the full URL of your live video or post</p>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <h4 class="text-sm font-medium text-blue-900 mb-2">Platform Examples:</h4>
+            <ul class="text-xs text-blue-800 space-y-1">
+              <li><strong>Facebook:</strong> https://www.facebook.com/username/videos/123456789/</li>
+              <li><strong>YouTube:</strong> https://www.youtube.com/watch?v=dQw4w9WgXcQ</li>
+              <li><strong>TikTok:</strong> https://www.tiktok.com/@username/video/123456789</li>
+              <li><strong>Instagram:</strong> https://www.instagram.com/p/ABC123DEF/</li>
+            </ul>
+          </div>
+        </div>
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Live event</.button>
         </:actions>

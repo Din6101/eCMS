@@ -11,10 +11,10 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      |> assign(:applications, Courses.list_applications(%{
        "page" => "1",
        "search" => "",
-       "sort" => "id_desc"
+       "status" => "pending"
      }))
      |> assign(:search, "")
-     |> assign(:sort, "id_desc")
+     |> assign(:status, "pending")
      |> assign(:page, 1)}
   end
 
@@ -27,7 +27,7 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
     {:noreply,
      assign(socket, :applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
-       "sort" => socket.assigns.sort,
+       "status" => socket.assigns.status,
        "page" => socket.assigns.page
      }))}
   end
@@ -39,7 +39,7 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
     {:noreply,
      assign(socket, :applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
-       "sort" => socket.assigns.sort,
+       "status" => socket.assigns.status,
        "page" => socket.assigns.page
      }))}
   end
@@ -53,7 +53,7 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      |> put_flash(:info, "Application deleted")
      |> assign(:applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
-       "sort" => socket.assigns.sort,
+       "status" => socket.assigns.status,
        "page" => socket.assigns.page
      }))}
   end
@@ -85,28 +85,33 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
     end
   end
 
+  def handle_event("approve_all", _params, socket) do
+    # Use current filters to approve only matching applications
+    _count = Courses.approve_all_applications(%{
+      "search" => socket.assigns.search,
+      "status" => socket.assigns.status
+    })
+
+    {:noreply,
+     socket
+     |> put_flash(:info, "All matching applications approved")
+     |> assign(:applications, Courses.list_applications(%{
+       "search" => socket.assigns.search,
+       "status" => socket.assigns.status,
+       "page" => socket.assigns.page
+     }))}
+  end
+
 
   def handle_event("search", %{"search" => search}, socket) do
     {:noreply,
      socket
      |> assign(:applications, Courses.list_applications(%{
        "search" => search,
-       "sort" => socket.assigns.sort,
+       "status" => socket.assigns.status,
        "page" => "1"
      }))
      |> assign(:search, search)
-     |> assign(:page, 1)}
-  end
-
-  def handle_event("sort", %{"sort" => sort}, socket) do
-    {:noreply,
-     socket
-     |> assign(:applications, Courses.list_applications(%{
-       "search" => socket.assigns.search,
-       "sort" => sort,
-       "page" => "1"
-     }))
-     |> assign(:sort, sort)
      |> assign(:page, 1)}
   end
 
@@ -117,10 +122,22 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      socket
      |> assign(:applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
-       "sort" => socket.assigns.sort,
+       "status" => socket.assigns.status,
        "page" => page
      }))
      |> assign(:page, page_num)}
+  end
+
+  def handle_event("filter_status", %{"status" => status}, socket) do
+    {:noreply,
+     socket
+     |> assign(:applications, Courses.list_applications(%{
+       "search" => socket.assigns.search,
+       "status" => status,
+       "page" => "1"
+     }))
+     |> assign(:status, status)
+     |> assign(:page, 1)}
   end
 
   defp notification_status(app) do
