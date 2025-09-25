@@ -237,6 +237,7 @@ defmodule ECMS.TrainingTest do
     end
   end
 
+
   describe "results" do
     alias ECMS.Training.Result
 
@@ -350,4 +351,5 @@ defmodule ECMS.TrainingTest do
       assert %Ecto.Changeset{} = Training.change_certification(certification)
     end
   end
+
 end

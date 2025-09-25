@@ -22,8 +22,10 @@ defmodule ECMSWeb.Router do
     pipe_through [:browser]
 
     get "/", PageController, :home
+
     get "/landing", PageController, :landing
     get "/home", PageController, :classic_home
+
 
 
   end
@@ -69,6 +71,7 @@ defmodule ECMSWeb.Router do
 
       # Certifications (admin)
 
+
       live "/certifications", CertificationLive.Index, :index
       live "/certifications/new", CertificationLive.Index, :new
       live "/certifications/:id/edit", CertificationLive.Index, :edit
@@ -100,6 +103,7 @@ defmodule ECMSWeb.Router do
       live "/enrollments/:id", EnrollmentLive.Show, :show
       live "/enrollments/:id/show/edit", EnrollmentLive.Show, :edit
 
+
       live "/results", ResultLive.Index, :index
       live "/results/new", ResultLive.Index, :new
       live "/results/:id/edit", ResultLive.Index, :edit
@@ -114,6 +118,7 @@ defmodule ECMSWeb.Router do
       live "/feedback/:id", FeedbackLive.Show, :show
       live "/feedback/:id/show/edit", FeedbackLive.Show, :edit
 
+
     end
   end
 
@@ -127,6 +132,7 @@ defmodule ECMSWeb.Router do
     live "/dashboard_student", DashboardStudent, :index
     live "/course_live/student_course", CourseLive.StudentCourse, :index
     live "/student_notifications", StudentNotifications.Index, :index
+
     live "/student_results", StudentResults.Index, :index
     live "/student_certification", StudentCertification.Index, :index
 

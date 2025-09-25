@@ -7,25 +7,37 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
     {:ok,
      socket
      |> assign(:courses, Courses.list_courses(%{"page" => "1"}))
+
      |> assign(:applications, Courses.list_all_applications())
      |> assign(:search, "")
      |> assign(:sort, "id_desc")
      |> assign(:applying_course_id, nil)}
+
+     |> assign(:applications, Courses.list_applications())
+     |> assign(:search, "")
+     |> assign(:sort, "id_desc")}
+
   end
 
   @impl true
   def handle_event("apply", %{"id" => id}, socket) do
     user = socket.assigns.current_user
+
     course_id = String.to_integer(id)
 
     # Set loading state
     socket = assign(socket, :applying_course_id, course_id)
 
     case Courses.apply_course(user, course_id) do
+
+
+    case Courses.apply_course(user, String.to_integer(id)) do
+
       {:ok, _app} ->
         {:noreply,
          socket
          |> put_flash(:info, "Applied successfully")
+
          |> assign(:applications, Courses.list_all_applications())
          |> assign(:applying_course_id, nil)}
 
@@ -45,6 +57,15 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
          socket
          |> put_flash(:error, error_message)
          |> assign(:applying_course_id, nil)}
+
+         |> assign(:applications, Courses.list_applications())
+         |> clear_flash(:info)}
+
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Could not apply: #{inspect(changeset.errors)}")}
+
     end
   end
 
@@ -112,7 +133,11 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
         </div>
       <% end %>
       <!-- Search + Filter -->
+
       <div class="flex justify-start items-center px-8 py-4">
+
+      <div class="flex justify-end items-center px-8 py-4">
+
       <form phx-submit="search" class="flex gap-2 items-center">
         <input
         type="text"
@@ -146,6 +171,10 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
               <th class="px-4 py-2 text-left">Course ID</th>
               <th class="px-4 py-2 text-left">Title</th>
 
+
+              <th class="px-4 py-2 text-left">Quota per course</th>
+
+
               <th class="px-4 py-2 text-left">Description</th>
               <th class="px-4 py-2 text-right">Action</th>
             </tr>
@@ -155,10 +184,20 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
               <td class="px-4 py-2"><%= course.course_id %></td>
               <td class="px-4 py-2"><%= course.title %></td>
 
+
+              <td class="px-4 py-2">
+                <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  <%= ECMS.Courses.count_approved_applications_for_course(course.id) %>/20
+                </span>
+                <span class="ml-1 text-[10px] text-gray-500">(approved only)</span>
+              </td>
+
+
               <td class="px-4 py-2"><%= course.description %></td>
               <td class="px-4 py-2 text-right">
                 <%= case Enum.find(@applications, &(&1.course_id == course.id && &1.user_id == @current_user.id)) do %>
                 <% nil -> %>
+
                   <%= if @applying_course_id == course.id do %>
                     <button type="button" disabled class="px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed">
                       Applying...
@@ -182,6 +221,24 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
                   </span>
                 <% end %>
               </td>
+
+                  <button type="button" phx-click="apply" phx-value-id={course.id} class="px-3 py-1 bg-blue-500 text-white rounded">
+                    Apply
+                  </button>
+                <% app -> %>
+                  <span class={
+                    case app.status do
+                    :approved -> "text-green-600"
+                    :pending -> "text-yellow-600"
+                    :rejected -> "text-red-600"
+                    _ -> "text-gray-600"
+                    end
+                    }>
+                  (<%= String.capitalize(to_string(app.status)) %>)
+                  </span>
+              <% end %>
+            </td>
+
           </tr>
         </tbody>
       </table>
