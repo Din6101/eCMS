@@ -35,6 +35,11 @@ end
     |> Repo.all()
   end
 
+  # Dashboard helpers
+  def count_users do
+    Repo.aggregate(User, :count, :id)
+  end
+
   # ---------------------------------------------------------
   # DATABASE GETTERS
   # ---------------------------------------------------------
@@ -236,10 +241,5 @@ end
     |> Repo.update()
   end
 
-  @doc """
-  Counts total users.
-  """
-  def count_users do
-    Repo.aggregate(User, :count, :id)
-  end
+
 end

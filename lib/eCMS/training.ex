@@ -7,8 +7,12 @@ defmodule ECMS.Training do
   alias ECMS.Repo
 
 
+
   alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification, Feedback}
   alias ECMS.Accounts.User
+
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Feedback, Certification}
+
 
   alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities}
 
@@ -96,6 +100,38 @@ defmodule ECMS.Training do
     |> Repo.insert()
   end
 
+  # --------------------
+  # Feedback
+  # --------------------
+
+  def list_feedback do
+    Repo.all(Feedback)
+    |> Repo.preload([:student, :course])
+  end
+
+  def get_feedback!(id) do
+    Repo.get!(Feedback, id)
+    |> Repo.preload([:student, :course])
+  end
+
+  def create_feedback(attrs \\ %{}) do
+    %Feedback{}
+    |> Feedback.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_feedback(%Feedback{} = feedback, attrs) do
+    feedback
+    |> Feedback.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_feedback(%Feedback{} = feedback), do: Repo.delete(feedback)
+
+  def change_feedback(%Feedback{} = feedback, attrs \\ %{}) do
+    Feedback.changeset(feedback, attrs)
+  end
+
   def update_activities(%Activities{} = activities, attrs) do
     activities
     |> Activities.changeset(attrs)
@@ -124,6 +160,128 @@ defmodule ECMS.Training do
       preload: [:course]
     )
     |> Repo.all()
+  end
+
+  # --------------------
+  # Results
+  # --------------------
+
+  def list_results do
+    Repo.all(Result)
+    |> Repo.preload([:user, :course])
+  end
+
+  def list_results_for_student(student_id) do
+    from(r in Result, where: r.user_id == ^student_id, preload: [:course])
+    |> Repo.all()
+  end
+
+  def get_result!(id) do
+    Repo.get!(Result, id)
+    |> Repo.preload([:user, :course])
+  end
+
+  def create_result(attrs \\ %{}) do
+    %Result{}
+    |> Result.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_result(%Result{} = result, attrs) do
+    result
+    |> Result.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_result(%Result{} = result), do: Repo.delete(result)
+
+  def change_result(%Result{} = result, attrs \\ %{}) do
+    Result.changeset(result, attrs)
+  end
+
+  # --------------------
+  # Certifications
+  # --------------------
+
+  def list_certifications do
+    Repo.all(Certification)
+    |> Repo.preload([:user, :course])
+  end
+
+  def list_certifications_for_student(student_id) do
+    from(c in Certification, where: c.user_id == ^student_id, preload: [:course])
+    |> Repo.all()
+  end
+
+  def get_certification!(id) do
+    Repo.get!(Certification, id)
+    |> Repo.preload([:user, :course])
+  end
+
+  def create_certification(attrs \\ %{}) do
+    %Certification{}
+    |> Certification.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_certification(%Certification{} = certification, attrs) do
+    certification
+    |> Certification.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_certification(%Certification{} = certification), do: Repo.delete(certification)
+
+  def change_certification(%Certification{} = certification, attrs \\ %{}) do
+    Certification.changeset(certification, attrs)
+  end
+
+  # --------------------
+  # Simple cross-context helpers
+  # --------------------
+
+  def list_students do
+    ECMS.Accounts.list_students()
+  end
+
+  # Small proxy to courses for convenience in LiveViews/components
+  def list_courses do
+    ECMS.Courses.list_all_courses()
+  end
+
+  # Trainer/student stats helpers
+  def count_students_by_trainer(trainer_id) do
+    from(s in Schedule, where: s.trainer_id == ^trainer_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_feedback_by_trainer(trainer_id) do
+    from(f in Feedback,
+      join: s in Schedule,
+      on: f.course_id == s.course_id,
+      where: s.trainer_id == ^trainer_id
+    )
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_enrollments_by_student(student_id) do
+    from(e in Enrollment, where: e.user_id == ^student_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def count_certifications_by_student(student_id) do
+    from(c in Certification, where: c.user_id == ^student_id)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def get_average_score_by_student(student_id) do
+    from(r in Result, where: r.user_id == ^student_id, select: avg(r.final_score))
+    |> Repo.one()
+    |> case do
+      nil -> 0
+      %Decimal{} = dec -> dec |> Decimal.to_float() |> trunc()
+      value when is_number(value) -> trunc(value)
+    end
   end
 
 
@@ -256,315 +414,7 @@ def update_trainer_schedule(%Schedule{} = schedule, attrs) do
 end
 
 
-  alias ECMS.Training.Result
 
-
-  def list_results_for_student(user_id) do
-    ECMS.Repo.all(
-      from r in ECMS.Training.Result,
-        where: r.user_id == ^user_id,
-        preload: [:course]
-    )
-  end
-
-
-  @doc """
-  Returns the list of results.
-
-  ## Examples
-
-      iex> list_results()
-      [%Result{}, ...]
-
-  """
-  def list_results do
-    Repo.all(Result) |> Repo.preload([:user, :course])
-  end
-
-  @doc """
-  Gets a single result.
-
-  Raises `Ecto.NoResultsError` if the Result does not exist.
-
-  ## Examples
-
-      iex> get_result!(123)
-      %Result{}
-
-      iex> get_result!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_result!(id) do
-    Repo.get!(Result, id) |> Repo.preload([:user, :course])
-  end
-
-
-  @doc """
-  Creates a result.
-
-  ## Examples
-
-      iex> create_result(%{field: value})
-      {:ok, %Result{}}
-
-      iex> create_result(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_result(attrs \\ %{}) do
-    %Result{}
-    |> Result.changeset(attrs)
-    |> Repo.insert()
-    |> case do
-      {:ok, result} ->
-        {:ok, Repo.preload(result, [:user, :course])}
-
-      error ->
-        error
-    end
-  end
-
-  @doc """
-  Updates a result.
-
-  ## Examples
-
-      iex> update_result(result, %{field: new_value})
-      {:ok, %Result{}}
-
-      iex> update_result(result, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_result(%Result{} = result, attrs) do
-    result
-    |> Result.changeset(attrs)
-    |> Repo.update()
-    |> case do
-      {:ok, result} ->
-        {:ok, Repo.preload(result, [:user, :course])}
-
-      error ->
-        error
-    end
-  end
-
-  @doc """
-  Deletes a result.
-
-  ## Examples
-
-      iex> delete_result(result)
-      {:ok, %Result{}}
-
-      iex> delete_result(result)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_result(%Result{} = result) do
-    Repo.delete(result)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking result changes.
-
-  ## Examples
-
-      iex> change_result(result)
-      %Ecto.Changeset{data: %Result{}}
-
-  """
-  def change_result(%Result{} = result, attrs \\ %{}) do
-    Result.changeset(result, attrs)
-  end
-
-  alias ECMS.Training.Certification
-
-  @doc """
-  Returns the list of certifications.
-
-  ## Examples
-
-      iex> list_certifications()
-      [%Certification{}, ...]
-
-  """
-  def list_certifications do
-    Certification
-    |> Repo.all()
-    |> Repo.preload([:user, :course])
-  end
-
-  def list_certifications_for_student(user_id) do
-    ECMS.Training.Certification
-    |> where([c], c.user_id == ^user_id)
-    |> Repo.all()
-    |> Repo.preload(:course)
-  end
-
-
-  @doc """
-  Gets a single certification.
-
-  Raises `Ecto.NoResultsError` if the Certification does not exist.
-
-  ## Examples
-
-      iex> get_certification!(123)
-      %Certification{}
-
-      iex> get_certification!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_certification!(id), do:
-  Certification
-  |> Repo.get!(id)
-  |> Repo.preload([:user, :course])
-
-  @doc """
-  Creates a certification.
-
-  ## Examples
-
-      iex> create_certification(%{field: value})
-      {:ok, %Certification{}}
-
-      iex> create_certification(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_certification(attrs \\ %{}) do
-    %Certification{}
-    |> Certification.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a certification.
-
-  ## Examples
-
-      iex> update_certification(certification, %{field: new_value})
-      {:ok, %Certification{}}
-
-      iex> update_certification(certification, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_certification(%Certification{} = certification, attrs) do
-    certification
-    |> Certification.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a certification.
-
-  ## Examples
-
-      iex> delete_certification(certification)
-      {:ok, %Certification{}}
-
-      iex> delete_certification(certification)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_certification(%Certification{} = certification) do
-    Repo.delete(certification)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking certification changes.
-
-  ## Examples
-
-      iex> change_certification(certification)
-      %Ecto.Changeset{data: %Certification{}}
-
-  """
-  def change_certification(%Certification{} = certification, attrs \\ %{}) do
-    Certification.changeset(certification, attrs)
-  end
-
-  def list_students do
-    from(u in User, where: u.role == "student", select: {u.full_name, u.id})
-    |> Repo.all()
-  end
-
-  def list_courses do
-    Repo.all(ECMS.Courses.Course)
-  end
-
-  # --------------------
-  # Feedback
-  # --------------------
-
-  def list_feedback do
-    Repo.all(Feedback)
-    |> Repo.preload([:student, :course])
-  end
-
-  def get_feedback!(id) do
-    Repo.get!(Feedback, id)
-    |> Repo.preload([:student, :course])
-  end
-
-  def create_feedback(attrs \\ %{}) do
-    %Feedback{}
-    |> Feedback.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_feedback(%Feedback{} = feedback, attrs) do
-    feedback
-    |> Feedback.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_feedback(%Feedback{} = feedback), do: Repo.delete(feedback)
-
-  def change_feedback(%Feedback{} = feedback, attrs \\ %{}) do
-    Feedback.changeset(feedback, attrs)
-  end
-
-  # Count functions for profile stats
-  def count_students_by_trainer(_trainer_id) do
-    # Since Course schema doesn't have trainer_id, we'll return 0 for now
-    # This can be updated when trainer assignment is implemented
-    0
-  end
-
-  def count_feedback_by_trainer(_trainer_id) do
-    # Since Course schema doesn't have trainer_id, we'll return 0 for now
-    # This can be updated when trainer assignment is implemented
-    0
-  end
-
-  def count_enrollments_by_student(student_id) do
-    from(e in Enrollment, where: e.user_id == ^student_id)
-    |> Repo.aggregate(:count, :id)
-  end
-
-  def count_certifications_by_student(student_id) do
-    from(c in Certification, where: c.user_id == ^student_id)
-    |> Repo.aggregate(:count, :id)
-  end
-
-  def get_average_score_by_student(student_id) do
-    result = from(r in Result,
-      where: r.user_id == ^student_id,
-      select: avg(r.final_score)
-    )
-    |> Repo.one()
-
-    case result do
-      nil -> "N/A"
-      score when is_number(score) -> Float.round(score, 1)
-      _ -> "N/A"
-    end
-  end
 
 
 end

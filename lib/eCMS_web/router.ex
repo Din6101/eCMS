@@ -69,12 +69,17 @@ defmodule ECMSWeb.Router do
       live "/activity/:id/show/edit", ActivitiesLive.Show, :edit
 
 
+      # Certifications (admin)
+
+
       live "/certifications", CertificationLive.Index, :index
       live "/certifications/new", CertificationLive.Index, :new
       live "/certifications/:id/edit", CertificationLive.Index, :edit
 
       live "/certifications/:id", CertificationLive.Show, :show
       live "/certifications/:id/show/edit", CertificationLive.Show, :edit
+
+
 
       live "/admin_result", AdminResult.Index, :index
       live "/admin_feedback", AdminFeedback.Index, :index

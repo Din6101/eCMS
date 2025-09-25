@@ -3,6 +3,7 @@ defmodule ECMSWeb.ScheduleLive.Index do
 
   alias ECMS.Training
   alias ECMS.Training.Schedule
+  alias ECMS.Email
 
   @impl true
   def mount(_params, _session, socket) do
@@ -17,7 +18,7 @@ defmodule ECMSWeb.ScheduleLive.Index do
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Course Schedule")
-    |> assign(:course_schedule, Training.get_schedule!(id))
+    |> assign(:schedule, Training.get_schedule!(id))
   end
 
   defp apply_action(socket, :new, _params) do
@@ -29,12 +30,12 @@ defmodule ECMSWeb.ScheduleLive.Index do
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, "Course Schedules")
-    |> assign(:course_schedule, nil)
+    |> assign(:schedule, nil)
   end
 
   @impl true
   def handle_info({ECMSWeb.ScheduleLive.FormComponent, {:saved, schedule}}, socket) do
-    {:noreply, stream_insert(socket, :schedules, schedule)}
+    {:noreply, stream_insert(socket, :course_schedules, schedule)}
   end
 
   @impl true
@@ -42,7 +43,23 @@ defmodule ECMSWeb.ScheduleLive.Index do
     schedule = Training.get_schedule!(id)
     {:ok, _} = Training.delete_schedule(schedule)
 
-    {:noreply, stream_delete(socket, :schedules, schedule)}
+    {:noreply, stream_delete(socket, :course_schedules, schedule)}
+  end
+
+  @impl true
+  def handle_event("send_notification", %{"id" => id}, socket) do
+    schedule = Training.get_schedule!(id)
+
+    case Email.send_schedule_notification(schedule) do
+      {:ok, _resp} ->
+        {:noreply, put_flash(socket, :info, "Email notification sent.")}
+      {:error, :missing_recipient} ->
+        {:noreply, put_flash(socket, :error, "Trainer email is missing.")}
+      {:error, reason} ->
+        {:noreply, put_flash(socket, :error, "Failed to send email: #{inspect(reason)}")}
+      _ ->
+        {:noreply, put_flash(socket, :info, "Email notification queued.")}
+    end
   end
 
 end

@@ -63,6 +63,16 @@ defmodule ECMSWeb.CourseLive.FormComponent do
     class="w-full"
   />
 
+      <!-- Qouta -->
+      <.input
+        field={@form[:qouta]}
+        type="number"
+        label="Qouta"
+        min="1"
+        placeholder="Enter maximum participants"
+        class="w-full"
+      />
+
       <:actions>
         <.button
           class="bg-[#2D9CDB] text-white px-4 py-2 rounded-lg font-semibold shadow"

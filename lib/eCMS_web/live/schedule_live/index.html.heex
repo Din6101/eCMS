@@ -25,7 +25,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody id="course_schedules" phx-update="stream" class="bg-white divide-y divide-gray-200">
             <tr :for={{dom_id, schedule} <- @streams.course_schedules} id={dom_id}>
 
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -75,6 +75,12 @@
                   >
                     Edit
                   </.link>
+                  <button
+                    phx-click={JS.push("send_notification", value: %{id: schedule.id})}
+                    class="text-blue-600 hover:text-blue-800"
+                  >
+                    Send notification
+                  </button>
                   <.link
                     phx-click={JS.push("delete", value: %{id: schedule.id}) |> hide("##{dom_id}")}
                     data-confirm="Are you sure?"

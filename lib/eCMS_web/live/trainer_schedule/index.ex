@@ -8,7 +8,7 @@ defmodule ECMSWeb.TrainerScheduleLive.Index do
     current_user = socket.assigns.current_user
     schedules = Training.list_schedules_by_trainer(current_user.id)
 
-    {:ok, assign(socket, :schedules, schedules)}
+    {:ok, stream(socket, :trainer_schedules, schedules)}
   end
 
   @impl true
@@ -22,7 +22,7 @@ defmodule ECMSWeb.TrainerScheduleLive.Index do
 
         {:noreply,
          socket
-         |> assign(:schedules, schedules)
+         |> stream(:trainer_schedules, schedules, reset: true)
          |> put_flash(:info, "Schedule accepted successfully!")}
 
       {:error, _changeset} ->
@@ -41,7 +41,7 @@ defmodule ECMSWeb.TrainerScheduleLive.Index do
 
         {:noreply,
          socket
-         |> assign(:schedules, schedules)
+         |> stream(:trainer_schedules, schedules, reset: true)
          |> put_flash(:info, "Schedule declined.")}
 
       {:error, _changeset} ->

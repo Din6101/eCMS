@@ -76,14 +76,7 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
             </select>
             <.error :for={ {msg, _opts} <- @form[:status].errors }><%= msg %></.error>
 
-            <div id="status-notes"
-                 class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md"
-                 style={if @form[:status].value in [nil, ""], do: "display: none", else: "display: block"}>
-              <p class="text-sm text-blue-800">
-                <span class="font-medium">Status Note:</span>
-                <%= Training.get_status_description(normalize_status(@form[:status].value)) %>
-              </p>
-            </div>
+            <.status_note form={@form} />
           </div>
 
           <div>
@@ -112,10 +105,17 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Time *</label>
-            <input type="time" name="schedule[schedule_time]"
-                   value={@form[:schedule_time].value || ""}
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#06A295] focus:border-[#06A295] text-gray-900 bg-white"
-                   required />
+            <select
+              name="schedule[schedule_time]"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#06A295] focus:border-[#06A295] text-gray-900 bg-white"
+              required
+            >
+              <%= time_value = (@form[:schedule_time].value || "") %>
+              <option value="" selected={time_value == ""}>Select time</option>
+              <%= for t <- time_options() do %>
+                <option value={t} selected={time_value == t}><%= t %></option>
+              <% end %>
+            </select>
             <.error :for={ {msg, _opts} <- @form[:schedule_time].errors }><%= msg %></.error>
           </div>
 
@@ -152,6 +152,27 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
     </div>
     """
   end
+
+  # Component: status note with safe fallback
+  attr :form, :any, required: true
+  def status_note(assigns) do
+    ~H"""
+    <div id="status-notes"
+         class="mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-md"
+         style={if @form[:status].value in [nil, ""], do: "display: none", else: "display: block"}>
+      <p class="text-sm text-emerald-800">
+        <span class="font-medium">Status:</span>
+        <%= status_description(@form[:status].value) %>
+      </p>
+    </div>
+    """
+  end
+
+  defp status_description(nil), do: "Please choose a status"
+  defp status_description(""), do: "Please choose a status"
+  defp status_description(status) when is_binary(status), do: Training.get_status_description(status)
+  defp status_description(status) when is_atom(status), do: Training.get_status_description(Atom.to_string(status))
+  defp status_description(_), do: "Unknown status"
 
   @impl true
   def update(%{schedule: schedule} = assigns, socket) do
@@ -256,9 +277,18 @@ defmodule ECMSWeb.ScheduleLive.FormComponent do
     |> Enum.map(fn trainer -> {trainer.full_name, trainer.id} end)
   end
 
+  # Predefined time options in 15-minute increments between 07:00 and 20:00
+  defp time_options do
+    start_minutes = 7 * 60
+    end_minutes = 20 * 60
+    step = 15
+
+    for m <- start_minutes..end_minutes//step do
+      hours = div(m, 60)
+      minutes = rem(m, 60)
+      :io_lib.format("~2..0B:~2..0B", [hours, minutes]) |> IO.iodata_to_binary()
+    end
+  end
+
   # Normalize string/atom status
-  defp normalize_status(nil), do: nil
-  defp normalize_status(""), do: nil
-  defp normalize_status(status) when is_binary(status), do: String.to_existing_atom(status)
-  defp normalize_status(status), do: status
 end

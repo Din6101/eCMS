@@ -50,7 +50,7 @@ defmodule ECMSWeb.FeedbackLive.FormComponent do
   def update(%{feedback: feedback} = assigns, socket) do
     changeset = Training.change_feedback(feedback)
 
-    student_options = Training.list_students()
+    student_options = Training.list_students() |> Enum.map(&{&1.full_name, &1.id})
     course_options = Courses.list_all_courses() |> Enum.map(&{&1.title, &1.id})
 
     {:ok,

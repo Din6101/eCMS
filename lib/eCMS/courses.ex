@@ -7,6 +7,7 @@ defmodule ECMS.Courses do
   alias ECMS.Repo
 
   alias ECMS.Courses.{Course, CourseApplication}
+  alias ECMS.Training.Schedule
 
   # Student applies to a course
   def apply_course(user, course_id) do
@@ -92,19 +93,7 @@ def list_all_applications do
 end
 
 # Count functions for profile stats
-def count_courses do
-  Repo.aggregate(Course, :count, :id)
-end
-
-def count_applications do
-  Repo.aggregate(CourseApplication, :count, :id)
-end
-
-def count_courses_by_trainer(_trainer_id) do
-  # Since Course schema doesn't have trainer_id, we'll return 0 for now
-  # This can be updated when trainer assignment is implemented
-  0
-end
+# (Use the consolidated implementations further below)
 
 def get_application_stats do
   # Get current week starting from Monday
@@ -238,6 +227,24 @@ end
     Repo.all(Course)
   end
 
+  # Simple counters used by dashboard
+  def count_courses do
+    Repo.aggregate(Course, :count, :id)
+  end
+
+  def count_applications do
+    Repo.aggregate(CourseApplication, :count, :id)
+  end
+
+  def count_courses_by_trainer(trainer_id) do
+    from(c in Course,
+      join: s in Schedule,
+      on: s.course_id == c.id and s.trainer_id == ^trainer_id,
+      select: count(fragment("DISTINCT ?", c.id))
+    )
+    |> Repo.one!()
+  end
+
 
   @doc """
   Returns the list of courses.
@@ -367,6 +374,7 @@ end
   end
 
 
+
   # Quota helpers (fixed 20 per course)
   def count_approved_applications_for_course(course_id) do
     import Ecto.Query
@@ -380,6 +388,9 @@ end
   def course_full?(course_id, quota \\ 20) do
     count_approved_applications_for_course(course_id) >= quota
   end
+
+  # Removed quota helpers (no per-course quota logic)
+
 
   # Suggest related courses by shared keywords in title/description
   def suggest_related_courses(%ECMS.Courses.Course{} = course, limit \\ 3) do
