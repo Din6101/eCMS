@@ -4,6 +4,8 @@ defmodule ECMS.Notifications do
   alias ECMS.Notifications.StudentNotifications
   alias ECMS.Notifications.AdminNotifications
   alias ECMS.Courses.CourseApplication
+  alias ECMS.Mailer
+  alias Swoosh.Email
 
 
   def list_latest_notifications(limit \\ 3) do
@@ -195,7 +197,11 @@ def send_notification(course_app_id, message) when is_binary(course_app_id) do
 end
 
 
+  def send_notification(course_app_id, message) when is_integer(course_app_id) do
+
+
 def send_notification(course_app_id, message) when is_integer(course_app_id) do
+
   course_app =
     Repo.get!(CourseApplication, course_app_id)
     |> Repo.preload([:user, :course])
@@ -223,10 +229,54 @@ def send_notification(course_app_id, message) when is_integer(course_app_id) do
       })
       |> Repo.insert()
 
+    # Send email to the student
+    send_email(course_app.user.email, message, course_app.course.title, admin_notif.id)
+
     {admin_notif, student_notif}
   end)
 end
 
+ # Send the email using Swoosh (via configured adapter)
+ defp send_email(student_email, message, course_name, notif_ref) do
+   try do
+    email =
+      Email.new()
+      |> Email.to(student_email)
+      |> Email.from({"eCMS System", "myecms2025@gmail.com"})
+      |> Email.subject("Course Application Update - #{course_name} [##{notif_ref}]")
+      |> Email.header("X-Idempotency-Key", "notif-#{notif_ref}-#{System.system_time(:millisecond)}")
+      |> Email.header("Content-Transfer-Encoding", "quoted-printable")
+      |> Email.text_body("""
+       Dear Student,
+
+       #{message}
+
+       Course: #{course_name}
+
+       This is an automated notification from eCMS.
+       """)
+      |> Email.html_body("""
+       <p>Dear Student,</p>
+       <p>#{message}</p>
+       <p><strong>Course:</strong> #{course_name}</p>
+       <p>This is an automated notification from eCMS.</p>
+       """)
+
+     case Mailer.deliver(email) do
+       {:ok, result} ->
+         IO.puts("✅ Email sent successfully to #{student_email}")
+         IO.puts("Email result: #{inspect(result)}")
+
+       {:error, reason} ->
+         IO.puts("❌ Failed to send email: #{inspect(reason)}")
+     end
+   rescue
+     error ->
+       IO.puts("❌ Email sending error: #{inspect(error)}")
+       IO.puts("❌ Stacktrace:")
+       IO.inspect(__STACKTRACE__)
+   end
+ end
 
 
 def send_notification(course_app_id, message) when is_integer(course_app_id) do

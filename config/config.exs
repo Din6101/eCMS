@@ -30,7 +30,7 @@ config :eCMS, ECMSWeb.Endpoint,
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
 # Note: This will be overridden by dev.exs for development SMTP
-config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
+config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.SMTP
 
 
 # Configure esbuild (the version is required)

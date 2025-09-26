@@ -82,27 +82,6 @@ defmodule ECMSWeb.UserRegistrationLive do
   </div>
 </div>
 
-<!-- Footer -->
-<div class="footer">
-  <div class="copyright">
-    <img src={~p"/images/copyright-34.png"} class="copyright-29" alt="copyright" />
-    <span class="text-30">2025 eCMS. All rights reserved.</span>
-  </div>
-  <div class="social">
-    <a class="social-item" href="#">
-      <img src={~p"/images/facebook-17.png"} class="facebook-22" alt="Facebook" /> <span class="text-25">facebook.com</span>
-    </a>
-    <a class="social-item" href="#">
-      <img src={~p"/images/whatsapp-28.png"} class="whatsapp-24" alt="WhatsApp" /> <span class="text-25">whatsapp.com</span>
-    </a>
-    <a class="social-item" href="#">
-      <img src={~p"/images/linkedin-circled-16.png"} class="linkedin-circled-21" alt="LinkedIn" /> <span class="text-25">linkedin.com</span>
-    </a>
-    <a class="social-item" href="#">
-      <img src={~p"/images/twitter-circled-18.png"} class="twitter-circled-23" alt="Twitter" /> <span class="text-25">twitter.com</span>
-    </a>
-  </div>
-</div>
 """
 
   end

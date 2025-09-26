@@ -8,6 +8,7 @@ defmodule ECMS.Courses do
 
   alias ECMS.Courses.{Course, CourseApplication}
   alias ECMS.Training.Schedule
+  alias ECMS.Notifications.{AdminNotifications, StudentNotifications}
 
   # Student applies to a course
   def apply_course(user, course_id) do
@@ -357,7 +358,34 @@ end
 
   """
   def delete_course(%Course{} = course) do
-    Repo.delete(course)
+    Repo.transaction(fn ->
+      # First, delete all related admin notifications
+      from(an in AdminNotifications, where: an.course_id == ^course.id)
+      |> Repo.delete_all()
+
+      # Then delete all related student notifications
+      from(sn in StudentNotifications, where: sn.course_id == ^course.id)
+      |> Repo.delete_all()
+
+      # Delete all results for this course
+      from(r in ECMS.Training.Result, where: r.course_id == ^course.id)
+      |> Repo.delete_all()
+
+      # Delete all certifications for this course
+      from(c in ECMS.Training.Certification, where: c.course_id == ^course.id)
+      |> Repo.delete_all()
+
+      # Delete all course applications for this course
+      from(ca in CourseApplication, where: ca.course_id == ^course.id)
+      |> Repo.delete_all()
+
+      # Delete all schedules for this course
+      from(s in ECMS.Training.Schedule, where: s.course_id == ^course.id)
+      |> Repo.delete_all()
+
+      # Finally, delete the course
+      Repo.delete(course)
+    end)
   end
 
   @doc """

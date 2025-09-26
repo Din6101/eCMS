@@ -35,6 +35,7 @@ defmodule ECMSWeb.ScheduleLive.Index do
 
   @impl true
   def handle_info({ECMSWeb.ScheduleLive.FormComponent, {:saved, schedule}}, socket) do
+    schedule = ECMS.Repo.preload(schedule, [:course, :trainer])
     {:noreply, stream_insert(socket, :course_schedules, schedule)}
   end
 
@@ -57,8 +58,6 @@ defmodule ECMSWeb.ScheduleLive.Index do
         {:noreply, put_flash(socket, :error, "Trainer email is missing.")}
       {:error, reason} ->
         {:noreply, put_flash(socket, :error, "Failed to send email: #{inspect(reason)}")}
-      _ ->
-        {:noreply, put_flash(socket, :info, "Email notification queued.")}
     end
   end
 

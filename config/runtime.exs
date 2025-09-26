@@ -98,36 +98,28 @@ if config_env() == :prod do
   # Check `Plug.SSL` for all available options in `force_ssl`.
 
   # ## Configuring the mailer
-  # Prefer SMTP in production when credentials are provided; fall back to Local
-  smtp_username = System.get_env("SMTP_USERNAME")
-  smtp_password = System.get_env("SMTP_PASSWORD")
-  smtp_relay = System.get_env("SMTP_RELAY") || "smtp.gmail.com"
-  smtp_port = String.to_integer(System.get_env("SMTP_PORT") || "587")
+  # Only configure mailer in production, let dev.exs handle development
+  if config_env() == :prod do
+    # ... existing repo/endpoint configs ...
 
-  if smtp_username && smtp_password do
-    # SMTP (Gmail compatible)
-    config :eCMS, ECMS.Mailer,
-      adapter: Swoosh.Adapters.SMTP,
-      relay: "smtp.gmail.com",
-      username: smtp_username,
-      password: smtp_password,
-      port: 587,
-      ssl: true,
-      tls: :always,
-      auth: :always,
-      retries: 2,
-      dkim: [
-        s: System.get_env("DKIM_SELECTOR") || "default",
-        d: System.get_env("DKIM_DOMAIN") || "domain.com",
-        private_key: {:pem_plain, File.read!(System.get_env("DKIM_PRIVKEY_PATH") || "priv/keys/domain.private")}
-      ]
-    end
-
-
-    # SMTP does not need the Swoosh API client
-    config :swoosh, :api_client, false
-  else
-    # Fallback to Local adapter if SMTP is not configured
-    config :eCMS, ECMS.Mailer, adapter: Swoosh.Adapters.Local
-    config :swoosh, :api_client, Swoosh.ApiClient.Finch
-  end
+     # ## Configuring the mailer (production only)
+  # Dev/test are configured in dev.exs/test.exs
+  config :eCMS, ECMS.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: System.get_env("SMTP_RELAY") || "smtp.gmail.com",
+  username: System.get_env("SMTP_USERNAME"),
+  password: System.get_env("SMTP_PASSWORD"),
+  port: String.to_integer(System.get_env("SMTP_PORT") || "587"),
+  ssl: false,
+  tls: :always,
+  auth: :always,
+  tls_options: [
+    verify: :verify_none,
+    server_name_indication: ~c"smtp.gmail.com",
+    versions: [:"tlsv1.2", :"tlsv1.3"]
+  ],
+  retries: 3,
+  no_mx_lookups: false
+config :swoosh, :api_client, false
+end
+end

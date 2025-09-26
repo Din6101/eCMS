@@ -7,29 +7,40 @@
   </:actions>
 </.header>
 
-<.table
-  id="activity"
-  rows={@streams.activity}
-  row_click={fn {_id, activities} -> JS.navigate(~p"/admin/activity/#{activities}") end}
->
-  <:col :let={{_id, activities}} label="Description">{activities.description}</:col>
-  <:col :let={{_id, activities}} label="Date">{activities.date}</:col>
-  <:col :let={{_id, activities}} label="Time">{activities.time}</:col>
-  <:action :let={{_id, activities}}>
-    <div class="sr-only">
-      <.link navigate={~p"/admin/activity/#{activities}"}>Show</.link>
-    </div>
-    <.link patch={~p"/admin/activity/#{activities}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, activities}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: activities.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
+<table class="min-w-full text-black bg-white border divide-y divide-gray-200">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="px-4 py-2 text-left w-[50%]">Description</th>
+      <th class="px-4 py-2 text-left">Date</th>
+      <th class="px-4 py-2 text-left">Time</th>
+      <th class="px-4 py-2 text-right w-[20%]">Actions</th>
+    </tr>
+  </thead>
+<tbody id="activity" phx-update="stream" class="divide-y divide-gray-200">
+    <%= for {id, activities} <- @streams.activity do %>
+      <tr id={id}>
+        <td class="px-4 py-2 whitespace-normal break-words"><%= activities.description %></td>
+        <td class="px-4 py-2 whitespace-nowrap"><%= activities.date %></td>
+        <td class="px-4 py-2 whitespace-nowrap"><%= activities.time %></td>
+        <td class="px-4 py-2 text-right whitespace-nowrap">
+          <div class="flex justify-end gap-2">
+            <div class="sr-only">
+              <.link navigate={~p"/admin/activity/#{activities}"}>Show</.link>
+            </div>
+            <.link patch={~p"/admin/activity/#{activities}/edit"} class="px-3 py-1 text-black rounded underline">Edit</.link>
+            <.link
+              phx-click={JS.push("delete", value: %{id: activities.id}) |> hide("##{id}")}
+              data-confirm="Are you sure?"
+              class="px-3 py-1 text-red-600 rounded underline"
+            >
+              Delete
+            </.link>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <.modal :if={@live_action in [:new, :edit]} id="activities-modal" show on_cancel={JS.patch(~p"/admin/activity")}>
   <.live_component
