@@ -6,7 +6,16 @@ defmodule ECMS.Training do
   import Ecto.Query, warn: false
   alias ECMS.Repo
 
+
+
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification, Feedback}
+  alias ECMS.Accounts.User
+
   alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Feedback, Certification}
+
+
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities}
+
 
 
   # --------------------
@@ -403,6 +412,7 @@ def get_trainer_schedule!(id), do: get_schedule!(id)
 def update_trainer_schedule(%Schedule{} = schedule, attrs) do
   update_schedule(schedule, attrs)
 end
+
 
 
 

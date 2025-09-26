@@ -261,6 +261,8 @@ defmodule ECMSWeb.UserAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
+
+
   # Redirect by role after login or when already authenticated
   # Handles being called with a User struct, a Plug.Conn, or a LiveView Socket
   defp signed_in_path(%ECMS.Accounts.User{role: "admin"}), do: ~p"/admin/dashboard_admin"
@@ -277,5 +279,10 @@ defmodule ECMSWeb.UserAuth do
   defp signed_in_path(%{role: "trainer"}), do: ~p"/trainer/dashboard_trainer"
   defp signed_in_path(%{role: "student"}), do: ~p"/student/dashboard_student"
   defp signed_in_path(_), do: ~p"/landing"
+
+  # Redirect admins vs normal users after login
+defp signed_in_path(%{role: "admin"}), do: ~p"/admin/dashboard_admin"
+defp signed_in_path(_user), do: ~p"/student/dashboard_student"
+
 
 end

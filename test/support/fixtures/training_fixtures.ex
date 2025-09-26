@@ -69,6 +69,7 @@ defmodule ECMS.TrainingFixtures do
     activities
   end
 
+
   @doc """
   Generate a result.
   """
@@ -99,4 +100,5 @@ defmodule ECMS.TrainingFixtures do
 
     certification
   end
+
 end
