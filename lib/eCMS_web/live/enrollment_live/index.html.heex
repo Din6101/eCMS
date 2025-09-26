@@ -29,7 +29,7 @@
           class="cursor-pointer hover:bg-gray-50"
         >
           <td class="px-4 py-2"><%= enrollment.user.full_name %></td>
-          <td class="px-4 py-2"><%= enrollment.course.title %></td>
+          <td class="px-4 py-2"><%= if enrollment.course, do: enrollment.course.title, else: "Course not found" %></td>
           <td class="px-4 py-2"><%= enrollment.status %></td>
           <td class="px-4 py-2"><%= enrollment.progress %></td>
           <td class="px-4 py-2"><%= for item <- String.split(enrollment.milestone || "", ",") do %>

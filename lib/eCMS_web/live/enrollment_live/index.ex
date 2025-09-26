@@ -9,6 +9,7 @@ defmodule ECMSWeb.EnrollmentLive.Index do
   if connected?(socket) do
     # Stream only after LiveView is connected
     enrollments = Training.list_enrollments()
+                   |> Enum.filter(& &1.course != nil)
     socket = stream(socket, :enrollments, enrollments)
     {:ok, socket}
   else
@@ -32,7 +33,7 @@ defmodule ECMSWeb.EnrollmentLive.Index do
 defp ensure_enrollment_stream_loaded(%{assigns: %{streams: %{enrollments: _}}} = socket), do: socket
 
 defp ensure_enrollment_stream_loaded(socket) do
-  stream(socket, :enrollments, Training.list_enrollments())
+  stream(socket, :enrollments, Training.list_enrollments() |> Enum.filter(& &1.course != nil))
 end
 
 

@@ -9,6 +9,7 @@ defmodule ECMSWeb.DashboardStudent do
     current_user = socket.assigns.current_user
 
     enrollments = Training.list_enrollments_by_student(current_user.id)
+                   |> Enum.filter(& &1.course != nil)
     notifications = Notifications.list_notifications_for_student(current_user.id)
     latest_notifications = Notifications.list_notifications_for_student(current_user.id) |> Enum.take(3)
     live_events = Training.list_live_events()
@@ -20,7 +21,7 @@ defmodule ECMSWeb.DashboardStudent do
     # Get enrolled upcoming courses
     enrolled_upcoming = enrollments
                        |> Enum.filter(fn enrollment ->
-                         Date.compare(enrollment.course.start_date, today) in [:eq, :gt]
+                         enrollment.course && Date.compare(enrollment.course.start_date, today) in [:eq, :gt]
                        end)
 
     # Get all upcoming courses (for students to see what's available)

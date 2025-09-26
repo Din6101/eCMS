@@ -6,8 +6,8 @@ defmodule ECMS.Email do
   def send_test_email do
     email =
       new()
-      |> from({"ECMS System", "noreply@ecms.com"})
-      |> to({"User Test", "student@example.com"})
+      |> from({"ECMS System", "myecms2025@gmail.com"})
+      |> to({"User Test", "airuddinardiyan.hq.aws@gmail.com"})
       |> subject("ECMS Test Email")
       |> text_body("Hello, this is a test email sent from ECMS.")
       |> html_body("""
@@ -18,6 +18,8 @@ defmodule ECMS.Email do
     Mailer.deliver(email)
   end
 
+  @spec send_schedule_notification(ECMS.Training.Schedule.t()) ::
+          {:error, any()} | {:ok, any()}
   def send_schedule_notification(%Schedule{} = schedule) do
     trainer_name = schedule.trainer && Map.get(schedule.trainer, :full_name) || "Trainer"
     trainer_email = schedule.trainer && Map.get(schedule.trainer, :email)

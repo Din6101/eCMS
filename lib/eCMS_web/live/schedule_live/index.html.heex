@@ -29,10 +29,10 @@
             <tr :for={{dom_id, schedule} <- @streams.course_schedules} id={dom_id}>
 
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                <%= schedule.course.title %>
+                <%= if Ecto.assoc_loaded?(schedule.course), do: schedule.course.title, else: "-" %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <%= schedule.trainer.full_name %>
+                <%= if Ecto.assoc_loaded?(schedule.trainer), do: schedule.trainer.full_name, else: "-" %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <div>
@@ -79,7 +79,7 @@
                     phx-click={JS.push("send_notification", value: %{id: schedule.id})}
                     class="text-blue-600 hover:text-blue-800"
                   >
-                    Send notification
+                    Send
                   </button>
                   <.link
                     phx-click={JS.push("delete", value: %{id: schedule.id}) |> hide("##{dom_id}")}

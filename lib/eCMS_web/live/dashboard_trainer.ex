@@ -15,7 +15,9 @@ defmodule ECMSWeb.DashboardTrainer do
     activities = Training.list_activities()
 
     # Get latest data (removed applications - moved to admin dashboard)
-    latest_enrollments = Training.list_enrollments() |> Enum.take(3)
+    latest_enrollments = Training.list_enrollments()
+                         |> Enum.filter(& &1.course != nil)
+                         |> Enum.take(3)
     all_results = Training.list_results()
     result_stats = get_result_statistics(all_results)
     latest_schedules = Training.list_schedules()
@@ -132,7 +134,7 @@ defmodule ECMSWeb.DashboardTrainer do
                 <%= for enrollment <- @latest_enrollments do %>
                   <tr>
                     <td><%= enrollment.user.full_name %></td>
-                    <td><%= enrollment.course.title %></td>
+                    <td><%= if enrollment.course, do: enrollment.course.title, else: "Course not found" %></td>
                     <td>
                       <div class="w-full bg-gray-200 rounded-full h-2">
                         <div class="bg-[#06A295] h-2 rounded-full" style={"width: #{enrollment.progress}%"}></div>

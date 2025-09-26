@@ -7,29 +7,40 @@
   </:actions>
 </.header>
 
-<.table
-  id="live_events"
-  rows={@streams.live_events}
-  row_click={fn {_id, live_event} -> JS.navigate(~p"/admin/live_events/#{live_event}") end}
->
-  <:col :let={{_id, live_event}} label="Title">{live_event.title}</:col>
-  <:col :let={{_id, live_event}} label="Live">{live_event.live}</:col>
-  <:col :let={{_id, live_event}} label="Presenter">{live_event.presenter}</:col>
-  <:action :let={{_id, live_event}}>
-    <div class="sr-only">
-      <.link navigate={~p"/admin/live_events/#{live_event}"}>Show</.link>
-    </div>
-    <.link patch={~p"/admin/live_events/#{live_event}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, live_event}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: live_event.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
+<table class="min-w-full text-black bg-white border divide-y divide-gray-200">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="px-4 py-2 text-left w-[40%]">Title</th>
+      <th class="px-4 py-2 text-left">Live</th>
+      <th class="px-4 py-2 text-left">Presenter</th>
+      <th class="px-4 py-2 text-right w-[20%]">Actions</th>
+    </tr>
+  </thead>
+  <tbody id="live_events" class="divide-y divide-gray-200">
+    <%= for {id, live_event} <- @streams.live_events do %>
+      <tr id={id}>
+        <td class="px-4 py-2 whitespace-normal break-words"><%= live_event.title %></td>
+        <td class="px-4 py-2 whitespace-nowrap"><%= live_event.live %></td>
+        <td class="px-4 py-2 whitespace-nowrap"><%= live_event.presenter %></td>
+        <td class="px-4 py-2 text-right whitespace-nowrap">
+          <div class="flex justify-end gap-2">
+            <div class="sr-only">
+              <.link navigate={~p"/admin/live_events/#{live_event}"}>Show</.link>
+            </div>
+            <.link patch={~p"/admin/live_events/#{live_event}/edit"} class="px-3 py-1 text-black rounded underline">Edit</.link>
+            <.link
+              phx-click={JS.push("delete", value: %{id: live_event.id}) |> hide("##{id}")}
+              data-confirm="Are you sure?"
+              class="px-3 py-1 text-red-600 rounded underline"
+            >
+              Delete
+            </.link>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <.modal :if={@live_action in [:new, :edit]} id="live_event-modal" show on_cancel={JS.patch(~p"/admin/live_events")}>
   <.live_component

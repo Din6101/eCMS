@@ -55,13 +55,21 @@ defmodule ECMSWeb.CourseLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     course = Courses.get_course!(id)
-    {:ok, _} = Courses.delete_course(course)
 
-    # reload page after deletion
-    courses_page =
-      Courses.list_courses(%{"search" => socket.assigns.search, "page" => "#{socket.assigns.courses.page}"})
+    case Courses.delete_course(course) do
+      {:ok, _} ->
+        # reload page after deletion
+        courses_page =
+          Courses.list_courses(%{"search" => socket.assigns.search, "page" => "#{socket.assigns.courses.page}"})
 
-    {:noreply, assign(socket, :courses, courses_page)}
+        {:noreply,
+         socket
+         |> assign(:courses, courses_page)
+         |> put_flash(:info, "Course deleted successfully")}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, "Failed to delete course. Please try again.")}
+    end
   end
 
   def handle_event("search", %{"search" => search}, socket) do
