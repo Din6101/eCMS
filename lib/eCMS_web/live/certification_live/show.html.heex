@@ -1,0 +1,27 @@
+<.header>
+  Certification {@certification.id}
+  <:subtitle>This is a certification record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/certifications/#{@certification}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit certification</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Certificate url">{@certification.certificate_url}</:item>
+  <:item title="Issued at">{@certification.issued_at}</:item>
+</.list>
+
+<.back navigate={~p"/admin/certifications"}>Back to certifications</.back>
+
+<.modal :if={@live_action == :edit} id="certification-modal" show on_cancel={JS.patch(~p"/admin/certifications/#{@certification}")}>
+  <.live_component
+    module={ECMSWeb.CertificationLive.FormComponent}
+    id={@certification.id}
+    title={@page_title}
+    action={@live_action}
+    certification={@certification}
+    patch={~p"/admin/certifications/#{@certification}"}
+  />
+</.modal>

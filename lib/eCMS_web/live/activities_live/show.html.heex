@@ -1,0 +1,28 @@
+<.header>
+  Activities {@activities.id}
+  <:subtitle>This is a activities record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/activity/#{@activities}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit activities</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Description">{@activities.description}</:item>
+  <:item title="Date">{@activities.date}</:item>
+  <:item title="Time">{@activities.time}</:item>
+</.list>
+
+<.back navigate={~p"/admin/activity"}>Back to activity</.back>
+
+<.modal :if={@live_action == :edit} id="activities-modal" show on_cancel={JS.patch(~p"/admin/activity/#{@activities}")}>
+  <.live_component
+    module={ECMSWeb.ActivitiesLive.FormComponent}
+    id={@activities.id}
+    title={@page_title}
+    action={@live_action}
+    activities={@activities}
+    patch={~p"/admin/activity/#{@activities}"}
+  />
+</.modal>

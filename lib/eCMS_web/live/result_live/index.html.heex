@@ -1,0 +1,59 @@
+<div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">📊 Result</h1>
+      <.link
+        patch={~p"/trainer/results/new"}
+        class="bg-white text-[#06A295] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        + New Result
+      </.link>
+</div>
+
+<main class="flex-1 flex justify-center items-start p-6 w-full">
+<div class="w-full px-6 py-8">
+<table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="px-4 py-2 text-left">Student</th>
+      <th class="px-4 py-2 text-left">Course</th>
+      <th class="px-4 py-2 text-left">Final Score</th>
+      <th class="px-4 py-2 text-left">Status</th>
+      <th class="px-4 py-2 text-left">Certification</th>
+      <th class="px-4 py-2 text-left">Actions</th>
+    </tr>
+  </thead>
+  <tbody class="bg-white divide-y divide-gray-200">
+    <%= for {_id, result} <- @streams.results do %>
+      <tr class="hover:bg-gray-50 cursor-pointer" phx-click={JS.navigate(~p"/trainer/results/#{result}")}>
+        <td><%= result.user && result.user.full_name || "N/A" %></td>
+        <td><%= result.course && result.course.title || "N/A" %></td>
+        <td class="px-4 py-2"><%= result.final_score %></td>
+        <td class="px-4 py-2"><%= String.capitalize(result.status) %></td>
+        <td class="px-4 py-2"><%= String.capitalize(result.certification) %></td>
+        <td class="px-4 py-2 space-x-2">
+          <.link patch={~p"/trainer/results/#{result}/edit"} class="text-blue-600 hover:underline">Edit</.link>
+          <.link
+            phx-click={JS.push("delete", value: %{id: result.id}) |> hide("##{result.id}")}
+            data-confirm="Are you sure?"
+            class="text-red-600 hover:underline"
+          >
+            Delete
+          </.link>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+</main>
+
+
+<.modal :if={@live_action in [:new, :edit]} id="result-modal" show on_cancel={JS.patch(~p"/trainer/results")}>
+  <.live_component
+    module={ECMSWeb.ResultLive.FormComponent}
+    id={@result.id || :new}
+    title={@page_title}
+    action={@live_action}
+    result={@result}
+    patch={~p"/trainer/results"}
+  />
+</.modal>

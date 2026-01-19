@@ -1,0 +1,30 @@
+<.header>
+  Enrollment {@enrollment.id}
+  <:subtitle>This is a enrollment record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/trainer/enrollments/#{@enrollment}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit enrollment</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="User">{@enrollment.user_id}</:item>
+  <:item title="Course">{@enrollment.course_id}</:item>
+  <:item title="Status">{@enrollment.status}</:item>
+  <:item title="Progress">{@enrollment.progress}</:item>
+  <:item title="Milestone">{@enrollment.milestone}</:item>
+</.list>
+
+<.back navigate={~p"/trainer/enrollments"}>Back to enrollments</.back>
+
+<.modal :if={@live_action == :edit} id="enrollment-modal" show on_cancel={JS.patch(~p"/trainer/enrollments/#{@enrollment}")}>
+  <.live_component
+    module={ECMSWeb.EnrollmentLive.FormComponent}
+    id={@enrollment.id}
+    title={@page_title}
+    action={@live_action}
+    enrollment={@enrollment}
+    patch={~p"/trainer/enrollments/#{@enrollment}"}
+  />
+</.modal>

@@ -1,0 +1,283 @@
+<div>
+  <.header>
+    Attendance Management
+    <:subtitle><span class="text-white">Use QR code or face recognition to record student attendance</span></:subtitle>
+  </.header>
+
+  <!-- Tabs -->
+  <div class="mt-8 border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <button
+        phx-click="switch_tab"
+        phx-value-tab="scanner"
+        class={[
+          "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors",
+          if(@active_tab == "scanner",
+            do: "border-teal-500 text-black-600",
+            else: "border-transparent text-white-500 hover:border-gray-300 hover:text-gray-700"
+          )
+        ]}
+      >
+        Scanner
+      </button>
+      <button
+        phx-click="switch_tab"
+        phx-value-tab="list"
+        class={[
+          "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors",
+          if(@active_tab == "list",
+            do: "border-teal-500 text-black-600",
+            else: "border-transparent text-white-500 hover:border-gray-300 hover:text-gray-700"
+          )
+        ]}
+      >
+        Attendance List
+      </button>
+    </nav>
+  </div>
+
+  <!-- Scanner Tab Content -->
+  <div :if={@active_tab == "scanner"} class="mt-8">
+    <!-- Scanner Mode Selection -->
+    <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Attendance Scanner</h2>
+      <div class="flex flex-wrap gap-4 items-center">
+        <label class="text-sm font-medium text-gray-700">Scanner Mode:</label>
+        <div class="flex gap-4">
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="scanner_mode"
+              value="qr"
+              checked={@scanner_mode == "qr"}
+              phx-click="change_scanner_mode"
+              phx-value-mode="qr"
+              class="mr-2"
+            />
+            <span class="text-sm text-gray-700">QR Code Only</span>
+          </label>
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="scanner_mode"
+              value="face"
+              checked={@scanner_mode == "face"}
+              phx-click="change_scanner_mode"
+              phx-value-mode="face"
+              class="mr-2"
+            />
+            <span class="text-sm text-gray-700">Face Recognition Only</span>
+          </label>
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="scanner_mode"
+              value="both"
+              checked={@scanner_mode == "both"}
+              phx-click="change_scanner_mode"
+              phx-value-mode="both"
+              class="mr-2"
+            />
+            <span class="text-sm text-gray-700">Both</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scanners Container -->
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- QR Scanner -->
+      <div :if={@scanner_mode == "qr" || @scanner_mode == "both"} id="qr-scanner-container" class="bg-white rounded-lg shadow-md p-6 border border-gray-200" phx-hook="QRScanner" phx-update="ignore">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">QR Code Scanner</h3>
+        
+        <div id="qr-reader" class="w-full max-w-md mx-auto mb-4 hidden" style="position: relative;"></div>
+        <div id="qr-scanner-error" class="hidden text-red-600 text-sm text-center mb-4"></div>
+        <div id="qr-scanner-status" class="text-center text-gray-600 text-sm mb-4">
+          <p id="qr-status-text">Click Start Scanner to begin QR scanning</p>
+        </div>
+        
+        <div class="text-center">
+          <button
+            type="button"
+            id="start-scanner-btn"
+            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+          >
+            Start QR Scanner
+          </button>
+          <button
+            type="button"
+            id="stop-scanner-btn"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors ml-2 hidden"
+          >
+            Stop QR Scanner
+          </button>
+        </div>
+
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm text-gray-600 mb-2">
+            <strong>Note:</strong> Students can show their QR code from their student card.
+          </p>
+        </div>
+      </div>
+
+      <!-- Face Scanner -->
+      <div :if={@scanner_mode == "face" || @scanner_mode == "both"} id="face-scanner-container" class="bg-white rounded-lg shadow-md p-6 border border-gray-200" phx-hook="FaceScanner" phx-update="ignore" data-students={@students_json}>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Face Recognition Scanner</h3>
+    
+    <div id="face-reader" class="w-full max-w-md mx-auto mb-4 hidden" style="position: relative;">
+      <video id="video" autoplay playsinline style="width: 100%; border-radius: 8px; background: #000;"></video>
+      <canvas id="canvas" style="display: none;"></canvas>
+      <canvas id="overlay-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; border-radius: 8px;"></canvas>
+      <!-- Guide frame for face positioning -->
+      <div id="face-guide-frame" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; max-width: 280px; aspect-ratio: 3/4; border: 3px solid rgba(34, 197, 94, 0.6); border-radius: 12px; pointer-events: none; box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); transition: all 0.3s ease;">
+        <!-- Corner indicators -->
+        <div style="position: absolute; top: -2px; left: -2px; width: 20px; height: 20px; border-top: 4px solid #22c55e; border-left: 4px solid #22c55e;"></div>
+        <div style="position: absolute; top: -2px; right: -2px; width: 20px; height: 20px; border-top: 4px solid #22c55e; border-right: 4px solid #22c55e;"></div>
+        <div style="position: absolute; bottom: -2px; left: -2px; width: 20px; height: 20px; border-bottom: 4px solid #22c55e; border-left: 4px solid #22c55e;"></div>
+        <div style="position: absolute; bottom: -2px; right: -2px; width: 20px; height: 20px; border-bottom: 4px solid #22c55e; border-right: 4px solid #22c55e;"></div>
+      </div>
+      <!-- Instructions overlay -->
+      <div id="face-instructions" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 8px 16px; border-radius: 6px; font-size: 12px; text-align: center; pointer-events: none;">
+        Position your face within the frame
+      </div>
+    </div>
+    <div id="scanner-error" class="hidden text-red-600 text-sm text-center mb-4"></div>
+    <div id="scanner-status" class="text-center text-gray-600 text-sm mb-4">
+      <p id="status-text">Click Start Scanner to begin face recognition</p>
+    </div>
+    
+    <div class="text-center">
+      <button
+        type="button"
+        id="start-scanner-btn"
+        class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+      >
+        Start Scanner
+      </button>
+      <button
+        type="button"
+        id="stop-scanner-btn"
+        class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors ml-2 hidden"
+      >
+        Stop Scanner
+      </button>
+    </div>
+
+    <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+      <p class="text-sm text-gray-600 mb-2">
+        <strong>Note:</strong> Students must have a profile picture uploaded to use face recognition.
+      </p>
+      <p class="text-sm text-gray-600">
+        Students with profile pictures: <%= length(@students_with_avatars) %>
+      </p>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance List Tab Content -->
+  <div :if={@active_tab == "list"} class="mt-8">
+    <div class="overflow-x-auto">
+      <%= if Enum.empty?(@attendances_by_month) do %>
+        <div class="text-center py-12 bg-white rounded-lg shadow-md border border-gray-200">
+          <p class="text-gray-500 text-lg">No attendance records found.</p>
+        </div>
+      <% else %>
+        <div class="space-y-8">
+          <div :for={{month_name, attendances} <- @attendances_by_month} class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900"><%= month_name %></h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Student Name
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Time
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Scanned By
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr :for={attendance <- attendances}>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <%= if attendance.user, do: attendance.user.full_name, else: "Unknown" %>
+                    </td>
+                    <%= if attendance.scanned_at do %>
+                      <% formatted = ECMS.DateTimeHelper.format_date_time_12h(attendance.scanned_at) %>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <%= formatted.date %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <%= formatted.time %>
+                      </td>
+                    <% else %>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                    <% end %>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <%= if attendance.scanner, do: attendance.scanner.full_name, else: "Unknown" %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        <%= String.capitalize(attendance.status || "present") %>
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <.link
+                        phx-click={JS.push("delete", value: %{id: attendance.id})}
+                        data-confirm="Are you sure?"
+                        class="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </.link>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -20px); }
+    20% { opacity: 1; transform: translate(-50%, 0); }
+    80% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  
+  #face-guide-frame {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  #face-guide-frame > div {
+    transition: all 0.3s ease;
+  }
+</style>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
