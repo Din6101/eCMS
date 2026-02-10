@@ -60,6 +60,14 @@ defmodule ECMSWeb.DashboardTrainer do
   @impl true
   def handle_event("close_modal_button", _params, socket) do
     {:noreply, assign(socket, show_video_modal: false, selected_video: nil)}
+<<<<<<< HEAD
+=======
+
+  @impl true
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, page_title: "Trainer Dashboard")}
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   end
 
   @impl true
@@ -489,4 +497,14 @@ defmodule ECMSWeb.DashboardTrainer do
     end
   end
 
+<<<<<<< HEAD
+=======
+    <div class="min-h-screen w-full bg-[#06A295] text-white p-8">
+      <h1 class="text-4xl font-bold mb-4">Trainer Dashboard</h1>
+      <p>Welcome, trainer! Here you can see stats and quick links.</p>
+    </div>
+    """
+  end
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 end

@@ -16,6 +16,12 @@
   </header>
 
   <!-- Search + Filter -->
+<<<<<<< HEAD
+=======
+
+  <div class="flex justify-start items-center px-8 py-4">
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   <div class="flex justify-end items-center px-8 py-4">
 
     <form phx-submit="search" class="flex gap-2 items-center">
@@ -51,6 +57,12 @@
   <!-- Courses table -->
   <main class="flex-1 flex justify-center items-start p-6 w-full">
     <div class="w-full px-6 py-8">
+<<<<<<< HEAD
+=======
+
+      <table class="min-w-full text-black bg-white border divide-y divide-gray-200">
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
       <table class="min-w-full text-black bg-white border border-black-300 divide-y divide-gray-200">
 
         <thead class="bg-gray-100">
@@ -78,6 +90,13 @@
               </span>
             </td>
             <td class="px-4 py-2 whitespace-normal break-words"><%= course.description %></td>
+<<<<<<< HEAD
+=======
+
+            <td class="px-4 py-2 whitespace-nowrap"><%= course.title %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= course.description %></td>
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
             <td class="px-4 py-2 whitespace-nowrap">
               <%= course.start_date && Calendar.strftime(course.start_date, "%d-%m-%Y") %>
             </td>
@@ -126,8 +145,13 @@
     </div>
   </main>
 
+<<<<<<< HEAD
     <!-- Modal for New/Edit form -->
     <.modal
+=======
+  <!-- Modal for New/Edit form -->
+  <.modal
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     :if={@live_action in [:new, :edit]}
     id="course-modal"  
     show

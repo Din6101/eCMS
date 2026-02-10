@@ -11,12 +11,26 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      |> assign(:applications, Courses.list_applications(%{
        "page" => "1",
        "search" => "",
+<<<<<<< HEAD
        "status" => "pending",
        "sort" => "id_desc"
      }))
      |> assign(:search, "")
      |> assign(:status, "pending")
      |> assign(:sort, "id_desc")
+=======
+
+       "status" => "pending"
+     }))
+     |> assign(:search, "")
+     |> assign(:status, "pending")
+
+       "sort" => "id_desc"
+     }))
+     |> assign(:search, "")
+     |> assign(:sort, "id_desc")
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
      |> assign(:page, 1)}
   end
 
@@ -139,23 +153,39 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
   def handle_event("paginate", %{"page" => page}, socket) do
     page_num = String.to_integer(page)
 
+<<<<<<< HEAD
+=======
+
+  def handle_event("sort", %{"sort" => sort}, socket) do
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     {:noreply,
      socket
      |> assign(:applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
+<<<<<<< HEAD
        "status" => socket.assigns.status,
        "sort" => socket.assigns.sort,
+=======
+
+       "status" => socket.assigns.status,
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
        "page" => page
      }))
      |> assign(:page, page_num)}
   end
 
+<<<<<<< HEAD
   def handle_event("sort", %{"sort" => sort}, socket) do
     {:noreply,
      socket
      |> assign(:applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
        "status" => socket.assigns.status,
+=======
+  def handle_event("filter_status", %{"status" => status}, socket) do
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
        "sort" => sort,
        "page" => "1"
      }))
@@ -163,17 +193,38 @@ defmodule ECMSWeb.CourseApplicationLive.Index do
      |> assign(:page, 1)}
   end
 
+<<<<<<< HEAD
   def handle_event("filter_status", %{"status" => status}, socket) do
+=======
+  def handle_event("paginate", %{"page" => page}, socket) do
+    page_num = String.to_integer(page)
+
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     {:noreply,
      socket
      |> assign(:applications, Courses.list_applications(%{
        "search" => socket.assigns.search,
+<<<<<<< HEAD
        "status" => status,
        "sort" => socket.assigns.sort,
+=======
+
+       "status" => status,
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
        "page" => "1"
      }))
      |> assign(:status, status)
      |> assign(:page, 1)}
+<<<<<<< HEAD
+=======
+
+       "sort" => socket.assigns.sort,
+       "page" => page
+     }))
+     |> assign(:page, page_num)}
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   end
 
   defp notification_status(app) do

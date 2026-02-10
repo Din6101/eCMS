@@ -19,7 +19,11 @@ config :eCMS, ECMS.Repo,
 config :eCMS, ECMSWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+<<<<<<< HEAD
   http: [ip: {0, 0, 0, 0}, port: 4001],
+=======
+  http: [ip: {0, 0, 0, 0}, port: 4000],
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -81,6 +85,7 @@ config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
+<<<<<<< HEAD
 # Configure mailer for development
 # By default, use Local adapter which stores emails in memory
 # You can view them at http://localhost:4001/dev/mailbox
@@ -112,3 +117,25 @@ else
 
   config :swoosh, :api_client, false
 end
+=======
+# Configure mailer for development - Use Mua (Mint-based SMTP) to avoid gen_smtp issues
+config :eCMS, ECMS.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: System.get_env("SMTP_RELAY") || "smtp.gmail.com",
+  username: System.get_env("SMTP_USERNAME"),
+  password: System.get_env("SMTP_PASSWORD"),
+  port: String.to_integer(System.get_env("SMTP_PORT") || "587"),
+  ssl: false,
+  tls: :always,
+  auth: :always,
+  tls_options: [
+    verify: :verify_none,
+    server_name_indication: ~c"smtp.gmail.com",
+    versions: [:"tlsv1.2", :"tlsv1.3"]
+  ],
+  retries: 3,
+  no_mx_lookups: false
+
+# Mua does not use the Swoosh API client
+config :swoosh, :api_client, false
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf

@@ -17,6 +17,11 @@ defmodule ECMSWeb do
   those modules here.
   """
 
+<<<<<<< HEAD
+=======
+  def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   def router do
     quote do
       use Phoenix.Router, helpers: false
@@ -111,8 +116,11 @@ defmodule ECMSWeb do
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
   end
+<<<<<<< HEAD
 
   def static_paths do
     ~w(assets fonts images uploads models favicon.ico robots.txt)
   end
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 end

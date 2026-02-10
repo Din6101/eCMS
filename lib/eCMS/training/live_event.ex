@@ -22,5 +22,12 @@ defmodule ECMS.Training.LiveEvent do
     |> validate_required([:title, :live, :presenter])
     |> validate_inclusion(:platform, ["facebook", "tiktok", "youtube", "instagram"])
     |> validate_format(:video_url, ~r/^https?:\/\//, message: "must be a valid URL")
+<<<<<<< HEAD
+=======
+=======
+    |> cast(attrs, [:title, :live, :presenter])
+    |> validate_required([:title, :live, :presenter])
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   end
 end

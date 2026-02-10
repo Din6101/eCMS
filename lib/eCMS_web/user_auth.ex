@@ -280,5 +280,16 @@ defmodule ECMSWeb.UserAuth do
   defp signed_in_path(%{role: "student"}), do: ~p"/student/dashboard_student"
   defp signed_in_path(_), do: ~p"/landing"
 
+<<<<<<< HEAD
+=======
+  # Redirect admins vs normal users after login
+# Redirect berdasarkan role
+defp signed_in_path(%{role: "admin"}), do: ~p"/admin/dashboard_admin"
+defp signed_in_path(%{role: "trainer"}), do: ~p"/trainer/dashboard_trainer"
+defp signed_in_path(%{role: "student"}), do: ~p"/student/dashboard_student"
+defp signed_in_path(_), do: ~p"/"  # fallback kalau role tak dikenali
+
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
 end

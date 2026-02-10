@@ -18,7 +18,11 @@ defmodule ECMS.Email do
     Mailer.deliver(email)
   end
 
+<<<<<<< HEAD
   @spec send_schedule_notification(%Schedule{}) ::
+=======
+  @spec send_schedule_notification(ECMS.Training.Schedule.t()) ::
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
           {:error, any()} | {:ok, any()}
   def send_schedule_notification(%Schedule{} = schedule) do
     trainer_name = schedule.trainer && Map.get(schedule.trainer, :full_name) || "Trainer"

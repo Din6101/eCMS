@@ -7,25 +7,52 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
     {:ok,
      socket
      |> assign(:courses, Courses.list_courses(%{"page" => "1"}))
+<<<<<<< HEAD
+=======
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
      |> assign(:applications, Courses.list_all_applications())
      |> assign(:search, "")
      |> assign(:sort, "id_desc")
      |> assign(:applying_course_id, nil)}
+<<<<<<< HEAD
+=======
+
+     |> assign(:applications, Courses.list_applications())
+     |> assign(:search, "")
+     |> assign(:sort, "id_desc")}
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   end
 
   @impl true
   def handle_event("apply", %{"id" => id}, socket) do
     user = socket.assigns.current_user
+<<<<<<< HEAD
+=======
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     course_id = String.to_integer(id)
 
     # Set loading state
     socket = assign(socket, :applying_course_id, course_id)
 
     case Courses.apply_course(user, course_id) do
+<<<<<<< HEAD
+=======
+
+
+    case Courses.apply_course(user, String.to_integer(id)) do
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
       {:ok, _app} ->
         {:noreply,
          socket
          |> put_flash(:info, "Applied successfully")
+<<<<<<< HEAD
+=======
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
          |> assign(:applications, Courses.list_all_applications())
          |> assign(:applying_course_id, nil)}
 
@@ -45,6 +72,18 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
          socket
          |> put_flash(:error, error_message)
          |> assign(:applying_course_id, nil)}
+<<<<<<< HEAD
+=======
+
+         |> assign(:applications, Courses.list_applications())
+         |> clear_flash(:info)}
+
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Could not apply: #{inspect(changeset.errors)}")}
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     end
   end
 
@@ -112,6 +151,12 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
         </div>
       <% end %>
       <!-- Search + Filter -->
+<<<<<<< HEAD
+=======
+
+      <div class="flex justify-start items-center px-8 py-4">
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
       <div class="flex justify-end items-center px-8 py-4">
 
       <form phx-submit="search" class="flex gap-2 items-center">
@@ -172,6 +217,7 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
               <td class="px-4 py-2"><%= course.description %></td>
               <td class="px-4 py-2 text-right">
                 <%= case Enum.find(@applications, &(&1.course_id == course.id && &1.user_id == @current_user.id)) do %>
+<<<<<<< HEAD
                   <% nil -> %>
                     <%= if @applying_course_id == course.id do %>
                       <button type="button" disabled class="px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed">
@@ -197,6 +243,51 @@ defmodule ECMSWeb.CourseLive.StudentCourse do
                   <% end %>
               </td>
 
+=======
+                <% nil -> %>
+
+                  <%= if @applying_course_id == course.id do %>
+                    <button type="button" disabled class="px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed">
+                      Applying...
+                    </button>
+                  <% else %>
+                    <button type="button" phx-click="apply" phx-value-id={course.id} class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors">
+                      Apply
+                    </button>
+                  <% end %>
+                <% app -> %>
+                  <span class={[
+                    "px-3 py-1 text-xs font-medium rounded-full",
+                    case app.status do
+                      :approved -> "bg-green-100 text-green-800"
+                      :pending -> "bg-yellow-100 text-yellow-800"
+                      :rejected -> "bg-red-100 text-red-800"
+                      _ -> "bg-gray-100 text-gray-800"
+                    end
+                  ]}>
+                    <%= String.capitalize(to_string(app.status)) %>
+                  </span>
+                <% end %>
+              </td>
+
+                  <button type="button" phx-click="apply" phx-value-id={course.id} class="px-3 py-1 bg-blue-500 text-white rounded">
+                    Apply
+                  </button>
+                <% app -> %>
+                  <span class={
+                    case app.status do
+                    :approved -> "text-green-600"
+                    :pending -> "text-yellow-600"
+                    :rejected -> "text-red-600"
+                    _ -> "text-gray-600"
+                    end
+                    }>
+                  (<%= String.capitalize(to_string(app.status)) %>)
+                  </span>
+              <% end %>
+            </td>
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
           </tr>
         </tbody>
       </table>

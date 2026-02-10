@@ -13,7 +13,10 @@ defmodule ECMS.Accounts.User do
 
     # Profile fields
     field :phone, :string
+<<<<<<< HEAD
     field :ic_number, :string
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     field :date_of_birth, :date
     field :address, :string
     field :avatar_url, :string
@@ -45,6 +48,7 @@ defmodule ECMS.Accounts.User do
       Defaults to `true`.
   """
 def registration_changeset(user, attrs, opts \\ []) do
+<<<<<<< HEAD
   # Normalize attrs to string keys and set default role to "student" if not provided
   attrs =
     attrs
@@ -58,6 +62,11 @@ def registration_changeset(user, attrs, opts \\ []) do
   user
   |> cast(attrs, [:full_name, :email, :password, :role]) # 👈 allow :role
   |> validate_required([:full_name, :email, :password])
+=======
+  user
+  |> cast(attrs, [:full_name, :email, :password, :role]) # 👈 allow :role
+  |> validate_required([:full_name, :email, :password, :role])
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   |> validate_inclusion(:role, ["student", "trainer", "admin"])
   |> validate_email(opts)
   |> validate_password(opts)
@@ -183,11 +192,18 @@ end
   """
   def profile_changeset(user, attrs) do
     user
+<<<<<<< HEAD
     |> cast(attrs, [:full_name, :phone, :ic_number, :date_of_birth, :address, :avatar_url])
     |> validate_required([:full_name])
     |> validate_length(:full_name, min: 2, max: 100)
     |> validate_length(:phone, min: 10, max: 20)
     |> validate_length(:ic_number, min: 10, max: 20)
+=======
+    |> cast(attrs, [:full_name, :phone, :date_of_birth, :address, :avatar_url])
+    |> validate_required([:full_name])
+    |> validate_length(:full_name, min: 2, max: 100)
+    |> validate_length(:phone, min: 10, max: 20)
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     |> validate_length(:address, max: 500)
   end
 end

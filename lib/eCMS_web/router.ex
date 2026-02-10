@@ -118,7 +118,10 @@ defmodule ECMSWeb.Router do
       live "/feedback/:id", FeedbackLive.Show, :show
       live "/feedback/:id/show/edit", FeedbackLive.Show, :edit
 
+<<<<<<< HEAD
       live "/attendance", AttendanceLive.Index, :index
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
     end
   end
@@ -136,7 +139,11 @@ defmodule ECMSWeb.Router do
 
     live "/student_results", StudentResults.Index, :index
     live "/student_certification", StudentCertification.Index, :index
+<<<<<<< HEAD
     live "/student_qr", StudentQRLive.Index, :index
+=======
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
     end
   end

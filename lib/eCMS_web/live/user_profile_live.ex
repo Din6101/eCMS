@@ -48,6 +48,7 @@ defmodule ECMSWeb.UserProfileLive do
                         </span>
                       </div>
                     <% end %>
+<<<<<<< HEAD
                     <button
                       phx-click="open_camera_modal"
                       class="absolute bottom-0 right-0 bg-teal-600 hover:bg-teal-700 text-white p-2 rounded-full shadow-lg transition-colors"
@@ -71,6 +72,14 @@ defmodule ECMSWeb.UserProfileLive do
                       Capture Face
                     </button>
                   </div>
+=======
+                    <button class="absolute bottom-0 right-0 bg-teal-600 hover:bg-teal-700 text-white p-2 rounded-full shadow-lg transition-colors">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                  </div>
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
                   <h3 class="text-2xl font-bold text-white"><%= @current_user.full_name %></h3>
                   <span class="px-3 py-1 bg-teal-600 text-white rounded-full text-sm font-medium">
                     <%= String.capitalize(@current_user.role) %>
@@ -81,6 +90,7 @@ defmodule ECMSWeb.UserProfileLive do
                 <div class="grid md:grid-cols-2 gap-8">
                   <!-- Personal Information -->
                   <div id="personal" class="p-6 space-y-6 bg-[#04675F] rounded-lg">
+<<<<<<< HEAD
                     <div class="flex justify-between items-center border-b border-white/30 pb-2">
                       <h4 class="text-lg font-semibold text-white">
                         Personal Information
@@ -133,6 +143,34 @@ defmodule ECMSWeb.UserProfileLive do
                         <p class="text-white font-semibold"><%= @current_user.address || "N/A" %></p>
                       </div>
                     </div>
+=======
+                    <h4 class="text-lg font-semibold text-white border-b border-white/30 pb-2">
+                      Personal Information
+                    </h4>
+
+                    <.simple_form
+                      for={@profile_form}
+                      id="profile_form"
+                      phx-submit="update_profile"
+                      phx-change="validate_profile"
+                      class= "bg-teal-600"
+                    >
+                      <div class="mb-4">
+                        <.live_file_input upload={@uploads.avatar} />
+                      </div>
+                      <.input field={@profile_form[:full_name]} type="text" label="Full Name" required />
+                      <.input field={@profile_form[:email]} type="email" label="Email" readonly />
+                      <.input field={@profile_form[:phone]} type="tel" label="Phone Number" />
+                      <.input field={@profile_form[:date_of_birth]} type="date" label="Date of Birth" />
+                      <.input field={@profile_form[:address]} type="textarea" label="Address" rows="3" />
+
+                      <:actions>
+                        <.button class="w-full" phx-disable-with="Updating...">
+                          Update Profile
+                        </.button>
+                      </:actions>
+                    </.simple_form>
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
                   </div>
 
                   <!-- Account Information -->
@@ -141,6 +179,7 @@ defmodule ECMSWeb.UserProfileLive do
                       Account Information
                     </h4>
 
+<<<<<<< HEAD
                     <!-- Student Card Section (for students only) -->
                     <%= if @current_user.role == "student" do %>
                       <div class="mb-6 pb-6 border-b border-white/30">
@@ -164,6 +203,8 @@ defmodule ECMSWeb.UserProfileLive do
                       </div>
                     <% end %>
 
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
                     <div class="space-y-4">
                       <div class="p-4">
                         <label class="block text-sm font-medium text-white mb-1">Role</label>
@@ -308,6 +349,7 @@ defmodule ECMSWeb.UserProfileLive do
           </div>
         </div>
       </div>
+<<<<<<< HEAD
 
       <!-- Camera Capture Modal -->
       <%= if assigns[:show_camera_modal] do %>
@@ -423,6 +465,8 @@ defmodule ECMSWeb.UserProfileLive do
           </div>
         </div>
       <% end %>
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
     """
   end
 
@@ -440,9 +484,12 @@ defmodule ECMSWeb.UserProfileLive do
       )
       |> assign(:profile_form, to_form(profile_changeset))
       |> assign(:stats, stats)
+<<<<<<< HEAD
       |> assign(:show_camera_modal, false)
       |> assign(:captured_image_data, nil)
       |> assign(:show_profile_modal, false)
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
     {:ok, socket}
   end
@@ -482,14 +529,19 @@ defmodule ECMSWeb.UserProfileLive do
          socket
          |> put_flash(:info, "Profile updated successfully")
          |> assign(:current_user, updated_user)
+<<<<<<< HEAD
          |> assign(:profile_form, to_form(Accounts.change_user_profile(updated_user)))
          |> assign(:show_profile_modal, false)}
+=======
+         |> assign(:profile_form, to_form(Accounts.change_user_profile(updated_user)))}
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
       {:error, changeset} ->
         {:noreply, assign(socket, :profile_form, to_form(changeset))}
     end
   end
 
+<<<<<<< HEAD
   def handle_event("open_camera_modal", _params, socket) do
     {:noreply, assign(socket, :show_camera_modal, true)}
   end
@@ -586,6 +638,8 @@ defmodule ECMSWeb.UserProfileLive do
     end
   end
 
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
   defp get_user_stats(user) do
     case user.role do
       "admin" ->
@@ -613,6 +667,7 @@ defmodule ECMSWeb.UserProfileLive do
         %{}
     end
   end
+<<<<<<< HEAD
 
   defp render_student_card(assigns) do
     assigns =
@@ -830,4 +885,6 @@ defmodule ECMSWeb.UserProfileLive do
     </style>
     """
   end
+=======
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 end

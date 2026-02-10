@@ -9,8 +9,12 @@ import Config
 
 config :eCMS,
   ecto_repos: [ECMS.Repo],
+<<<<<<< HEAD
   generators: [timestamp_type: :utc_datetime],
   default_timezone: "Asia/Kuala_Lumpur"
+=======
+  generators: [timestamp_type: :utc_datetime]
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
 # Configures the endpoint
 config :eCMS, ECMSWeb.Endpoint,

@@ -8,7 +8,17 @@ defmodule ECMS.Training do
 
 
 
+<<<<<<< HEAD
   alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification, Feedback, Attendance}
+=======
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Certification, Feedback}
+  alias ECMS.Accounts.User
+
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities, Result, Feedback, Certification}
+
+
+  alias ECMS.Training.{Enrollment, Schedule, LiveEvent, Activities}
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
 
 
@@ -407,6 +417,7 @@ def update_trainer_schedule(%Schedule{} = schedule, attrs) do
   update_schedule(schedule, attrs)
 end
 
+<<<<<<< HEAD
   # --------------------
   # Attendances
   # --------------------
@@ -478,5 +489,10 @@ end
   def change_attendance(%Attendance{} = attendance, attrs \\ %{}) do
     Attendance.changeset(attendance, attrs)
   end
+=======
+
+
+
+>>>>>>> f4cc723b89c09c3d7c28070dd4612ddd0b11a9bf
 
 end
